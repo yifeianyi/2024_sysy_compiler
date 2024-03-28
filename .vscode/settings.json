@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "Kconfig": "makefile",
+        "*.v": "verilog",
+        "compare": "c"
+    }
+}
