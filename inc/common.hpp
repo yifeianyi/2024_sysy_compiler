@@ -1,8 +1,15 @@
-#ifndef __DEBUG_H__
-#define __DEBUG_H__
-
-#include <common.h>
+#ifndef __COMMON_H__
+#define __COMMON_H__
+#include <iostream>
+#include <string>
+#include <assert.h>
+#include <ctype.h>
+#include <errno.h>
+#include <stdarg.h>
+#include <stdbool.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 // ----------- log -----------
 
@@ -52,7 +59,12 @@ do { \
 
 
 // -------------- debug function ------------------
-void printNChars(const char *str, int n);
-void printTokenList(const Token *Tok);
 void error(const char *Fmt, ...);
+
+/*----------------------------------------------------------*/
+/*----------------------------------------------------------*/
+
+
+// #include "debug.h"
+
 #endif

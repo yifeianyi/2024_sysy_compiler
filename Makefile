@@ -1,6 +1,6 @@
 SRC_DIR := src
 INC_DIR := inc
-OBJ_DIR := obj
+OBJ_DIR := build
 
 # 使用g++作为编译器来编译C和C++代码
 CXX := g++
@@ -38,6 +38,9 @@ $(TARGET): $(OBJ_FILES)
 test: compiler 
 	./test.sh
 
+run: compiler
+	./compiler 2023test/00_main.sy
+
 clean:
-	rm -rf $(OBJ_DIR)/*.o $(TARGET)
+	rm -rf $(OBJ_DIR)/*.o $(TARGET) build obj
 
