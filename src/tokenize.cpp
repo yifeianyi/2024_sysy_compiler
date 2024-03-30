@@ -4,6 +4,7 @@
 #include <fstream>
 #include <sstream>
 #include <string>
+#include <stdio.h>
 using std::string;
 
 
@@ -35,7 +36,7 @@ static bool isIdent2(const char C){
 
 static void TagKeywords(Token *head){
 
-  for(Token *T=head->Next; T->Kind !=TK_EOF; T = T->Next ){
+  for(Token *T=head; T->Kind !=TK_EOF; T = T->Next ){
     if(isKeywords(T))T->Kind = TK_KEYWORD;
   }
 }
@@ -54,8 +55,8 @@ static int readPunct(char *Ptr){
 
 /*----------------------------------核心定义---------------------------------------------*/
 TokenList *tokenize(char* P){
-  // Assert(P!=NULL,"Input File is NULL!");
-  TokenList* list= new TokenList;
+  Assert(P!=NULL,"Input File is NULL!");
+  TokenList* list = new TokenList;
 
   while(*P){
     if(isspace(*P)){
@@ -80,7 +81,9 @@ TokenList *tokenize(char* P){
       } while (isIdent2(*P));
 
       string name = list->fetchName(Start,P);
+      // printf("name:%s\n",name.c_str());
       list->addNode(new OtherTok(TK_IDENT, name));
+      
       continue;
     }
 
@@ -88,6 +91,7 @@ TokenList *tokenize(char* P){
       // 解析操作符
     int PunctLen = readPunct(P);
     if (PunctLen) {
+
       string name = list->fetchName(P,PunctLen);
       list->addNode(new OtherTok(TK_PUNCT,name));
       P += PunctLen;
@@ -101,20 +105,21 @@ TokenList *tokenize(char* P){
   list->addNode(new OtherTok(TK_EOF,"ending"));
   TagKeywords(list->head);     
   
-  list->print();        //标注Token中的所有 Keywords
+  // list->print(); 
   return list;
 }
 
-char *readFile(const string &Path){
-
+char *readFile(char *Path){
+  assert(Path!=NULL);
   FILE *FP;
     //过渡方案
-  if (Path == "-") {
+  if (strcmp(Path,"-")==0) {
     FP = stdin;
   } else {
-    FP = fopen(Path.c_str(), "r");
+    FP = fopen(Path, "r");
+    assert(FP);
     // if (!FP)
-      // error("cannot open %s: %s", Path, strerror(errno));
+    //   error("cannot open %s: %s", Path, strerror(errno));
   }
 
   // 要返回的字符串
@@ -146,6 +151,7 @@ char *readFile(const string &Path){
   return Buf;
 }
 
-TokenList *tokenizeFile(const string &Path){
+TokenList *tokenizeFile(char *Path){
+    // printf("In tokenizeFile\n");
     return tokenize(readFile(Path));
 }

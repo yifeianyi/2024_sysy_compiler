@@ -5,6 +5,7 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include <unistd.h>
 using std::string;
 extern void codegen(TokenList *list);
 int main(int Argc, char **Argv){
@@ -12,9 +13,11 @@ int main(int Argc, char **Argv){
         printf("%s\n",*Argv);
         // error("%s: invalid number of arguments", Argv[0]);
     }
-    
-    // printf("%s\n",readFile(string(Argv[1])));
-    TokenList *list = tokenizeFile(std::string(Argv[1]));
-    // codegen(list);
+    // char buf[1024];
+    // printf("arg:%s\n",Argv[1]);
+    // printf("pwd: %s\n",getcwd(buf,1024));
+    // printf("%s\n",readFile(Argv[1]));
+    TokenList *list = tokenizeFile(Argv[1]);
+    codegen(list);
     return 0;
 }

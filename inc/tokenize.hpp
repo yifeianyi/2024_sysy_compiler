@@ -85,7 +85,7 @@ public:
 
     void addNode(Token* Node) {
         if(this->head == nullptr){
-            head->Next = Node;
+            head = Node;
             tail = Node;
         }else{
             tail->Next = Node;
@@ -102,7 +102,7 @@ public:
     }
 };
 
-TokenList *tokenizeFile(const string &Path);
-char *readFile(const string &Path);
+TokenList *tokenizeFile(char *Path);
+char *readFile(char *Path);
 
 #endif
