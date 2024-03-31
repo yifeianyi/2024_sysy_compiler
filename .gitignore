@@ -1,3 +1,8 @@
 compiler
 test/
 obj/
+build/
+tmp/
+*.o
+*.S
+*.s

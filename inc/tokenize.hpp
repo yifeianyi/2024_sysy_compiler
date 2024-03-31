@@ -1,7 +1,7 @@
 #ifndef __TOKENIZE_HPP__
 #define __TOKENIZE_HPP__
-#include<iostream>
-using std::string;
+#include<common.hpp>
+
 
 typedef enum{
     TK_NUM,
@@ -102,7 +102,7 @@ public:
     }
 };
 
-TokenList *tokenizeFile(char *Path);
-char *readFile(char *Path);
+TokenList *tokenizeFile(const char *Path);
+char *readFile(const char *Path);
 
 #endif

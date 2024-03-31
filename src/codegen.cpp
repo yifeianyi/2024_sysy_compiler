@@ -1,15 +1,25 @@
 #include "common.hpp"
 #include "tokenize.hpp"
-void codegen(TokenList* list ){
+static FILE *OutputFile;
+static void printLn(const char *Fmt,...){
+  va_list VA;
+  va_start(VA, Fmt);
+  vfprintf(OutputFile, Fmt, VA);
+  va_end(VA);
+  fprintf(OutputFile, "\n");
+}
+
+void codegen(TokenList* list ,FILE* Out){
+    OutputFile = Out;
     Token *Tok = list->head;
     while(Tok->Name!="return"){
         Tok = Tok->Next;
     }
-    printf("  .globl main\n");
-    printf("main:\n");
+    printLn("  .globl main");
+    printLn("main:");
     if(Tok->Name=="return"){
         Tok = Tok->Next;
-        printf("  li a0, %d\n", Tok->getVal());
+        printLn("  li a0, %d", Tok->getVal());
     }
-    printf("  ret\n");
+    printLn("  ret");
 }

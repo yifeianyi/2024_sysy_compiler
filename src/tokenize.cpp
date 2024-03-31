@@ -109,7 +109,7 @@ TokenList *tokenize(char* P){
   return list;
 }
 
-char *readFile(char *Path){
+char *readFile(const char *Path){
   assert(Path!=NULL);
   FILE *FP;
     //过渡方案
@@ -151,7 +151,7 @@ char *readFile(char *Path){
   return Buf;
 }
 
-TokenList *tokenizeFile(char *Path){
+TokenList *tokenizeFile(const char *Path){
     // printf("In tokenizeFile\n");
     return tokenize(readFile(Path));
 }

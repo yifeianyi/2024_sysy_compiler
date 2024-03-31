@@ -2,6 +2,8 @@
 #define __COMMON_H__
 #include <iostream>
 #include <string>
+#include <string>
+#include <vector>
 #include <assert.h>
 #include <ctype.h>
 #include <errno.h>
@@ -10,7 +12,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
+#include <unistd.h>
+using std::string;
 // ----------- log -----------
 
 #define ASNI_FG_BLACK   "\33[1;30m"
