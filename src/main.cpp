@@ -13,10 +13,6 @@ int main(int Argc, char **Argv){
         printf("%s\n",*Argv);
         // error("%s: invalid number of arguments", Argv[0]);
     }
-    // char buf[1024];
-    // printf("arg:%s\n",Argv[1]);
-    // printf("pwd: %s\n",getcwd(buf,1024));
-    // printf("%s\n",readFile(Argv[1]));
     TokenList *list = tokenizeFile(Argv[1]);
     codegen(list);
     return 0;

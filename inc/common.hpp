@@ -10,7 +10,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
+using std::string;
 // ----------- log -----------
 
 #define ASNI_FG_BLACK   "\33[1;30m"
