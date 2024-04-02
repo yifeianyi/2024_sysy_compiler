@@ -55,8 +55,6 @@ class OtherTok: public Token{
 
 //---------------------------------------------------------------------------------
 class TokenList {
-    
-
 public:
     Token* head = nullptr;
     Token* tail = nullptr;
