@@ -1,5 +1,7 @@
 #include "common.hpp"
 #include "tokenize.hpp"
+#include "parse.hpp"
+
 static FILE *OutputFile;
 static void printLn(const char *Fmt,...){
   va_list VA;
@@ -8,18 +10,31 @@ static void printLn(const char *Fmt,...){
   va_end(VA);
   fprintf(OutputFile, "\n");
 }
+static void genStmt( ASTNode *Nd){
+  switch (Nd->getKind())
+  {
+  case ND_RETURN:
+    Nd = Nd->LHS;
+    printLn(" li a0,  %d",Nd->getVal());
+    break;
+  
+  default:
 
-void codegen(TokenList* list ,FILE* Out){
+    break;
+  }
+}
+void codegen(ObjNode *Obj,FILE* Out){
+    if(!Obj->IsFunc){
+      printf("Obj->Name:%s.\n",Obj->Name.c_str());
+      error("Semantic error.");
+    }
     OutputFile = Out;
-    Token *Tok = list->head;
-    while(Tok->Name!="return"){
-        Tok = Tok->Next;
-    }
-    printLn("  .globl main");
-    printLn("main:");
-    if(Tok->Name=="return"){
-        Tok = Tok->Next;
-        printLn("  li a0, %d", Tok->getVal());
-    }
-    printLn("  ret");
+
+    ASTNode *Nd = Obj->GetBody();
+
+    printLn(" .globl %s", Obj->Name.c_str());
+    printLn(" .text");
+    printLn("%s:", Obj->Name.c_str());
+    genStmt(Nd);
+    printLn(" ret");
 }

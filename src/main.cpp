@@ -1,20 +1,14 @@
 #include "common.hpp"
 #include "tokenize.hpp"
+#include "parse.hpp"
 using std::vector;
-extern void codegen(TokenList* list ,FILE* Out);
+using std::string;
+
+extern void codegen(ObjNode *Obj,FILE* Out);
 
 static bool OptS;
 static string OpTo;
 static string InputPath;
-void error(char const *Fmt, ...) {
-  // 定义一个va_list变量
-  va_list VA;
-  va_start(VA, Fmt);
-  fprintf(stderr, "\n");
-  va_end(VA);
-  exit(1);
-}
-
 static void parseArgs(int Argc, vector<string> &args){
     for(int i = 0; i < Argc-1; i++){
         if( args[i] == "--help"){
@@ -68,22 +62,22 @@ static FILE *openFile(string &Path){
     return Out;
 }
 
+
 int main(int Argc, char **Argv){
     if (Argc < 2) {
         printf("%s\n",*Argv);
-        // error("%s: invalid number of arguments", Argv[0]);
+        error("%s: invalid number of arguments", Argv[0]);
     }
 
     vector<string> args(Argv + 1,Argv + Argc);
     for(int i=1; i < Argc; i++) 
         args.push_back(string(Argv[i]));
-    printf("test:%s\n",args[0].c_str());
     parseArgs(Argc, args);
 
-    TokenList *list = tokenizeFile(InputPath.c_str());
 
+    TokenList *list = tokenizeFile(Argv[1]);
+    ObjNode *Obj = parse(list);
     FILE *Out = openFile(OpTo);
-    codegen(list, Out);
-
+    codegen(Obj,Out);
     return 0;
 }

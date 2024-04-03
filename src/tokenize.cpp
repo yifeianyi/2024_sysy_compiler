@@ -7,33 +7,14 @@
 #include <stdio.h>
 using std::string;
 
-
-
-
-/*----------------------------------组件声明---------------------------------------------*/
-static bool isIdent1(const char C);
-static bool isIdent2(const char C);
-static int readPunct(char *Ptr);
-static void TagKeywords(Token *Tok);
 static bool isKeywords(Token *Tok);
-
-// /*----------------------------------核心声明---------------------------------------------*/
-// Token *tokenize(char *Filename, char *P);
-// char *readFile(char *Path);
-// Token *tokenizeFile(char *Path);
-
-// static char *CurrentFilename; // 输入的文件名
-// static char *CurrentInput; // 输入的字符串
-
-// /*----------------------------------组件定义---------------------------------------------*/
+/*----------------------------------组件定义---------------------------------------------*/
 static bool isIdent1(const char C){
   return ('a' <= C && C <= 'z') || ('A' <= C && C <= 'Z') || C == '_';
 }
-
 static bool isIdent2(const char C){
   return isIdent1(C) || ('0' <= C && C <= '9');
 }
-
 static void TagKeywords(Token *head){
 
   for(Token *T=head; T->Kind !=TK_EOF; T = T->Next ){
@@ -41,18 +22,16 @@ static void TagKeywords(Token *head){
   }
 }
 static bool isKeywords(Token *Tok){
-  static string keywords[]={"return"};
+  static string keywords[]={"return","int","float"};
   int len =  keywords->size();
   for(int i = 0;i < len;i++){
     if(Tok->Name == keywords[i])return true;
   }
   return false;
 }
-
 static int readPunct(char *Ptr){
   return ispunct(*Ptr) ? 1 : 0 ;
 }
-
 /*----------------------------------核心定义---------------------------------------------*/
 TokenList *tokenize(char* P){
   Assert(P!=NULL,"Input File is NULL!");
@@ -79,33 +58,29 @@ TokenList *tokenize(char* P){
       do {
           ++P;
       } while (isIdent2(*P));
-
       string name = list->fetchName(Start,P);
-      // printf("name:%s\n",name.c_str());
       list->addNode(new OtherTok(TK_IDENT, name));
-      
       continue;
     }
-
-
-      // 解析操作符
+    
+    // 解析操作符
     int PunctLen = readPunct(P);
     if (PunctLen) {
-
       string name = list->fetchName(P,PunctLen);
       list->addNode(new OtherTok(TK_PUNCT,name));
       P += PunctLen;
       continue;
     }
 
-      //非法字符处理
-      // error("invalid token");
+      // 非法字符处理
+      error("invalid token");
   }
 
   list->addNode(new OtherTok(TK_EOF,"ending"));
+#ifdef __Debug_Token_List__
+  list->print();
+#endif
   TagKeywords(list->head);     
-  
-  // list->print(); 
   return list;
 }
 
@@ -118,8 +93,8 @@ char *readFile(const char *Path){
   } else {
     FP = fopen(Path, "r");
     assert(FP);
-    // if (!FP)
-    //   error("cannot open %s: %s", Path, strerror(errno));
+    if (!FP)
+      error("cannot open %s: %s", Path, strerror(errno));
   }
 
   // 要返回的字符串

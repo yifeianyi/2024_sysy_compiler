@@ -29,22 +29,23 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
 
 # 编译C++源文件
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
-	$(CXX) $(CXXFLAGS) -c $< -o $@
+	@$(CXX) $(CXXFLAGS) -c $< -o $@
 
 $(TARGET): $(OBJ_FILES)
-	$(CXX) $(CXXFLAGS) $^ -o $@
+	@$(CXX) $(CXXFLAGS) $^ -o $@
 
-.PHONY: clean test
+.PHONY: clean test count
 
-test: compiler 
+test: $(TARGET) 
 	./test.sh
 
-run: compiler
-	$(shell mkdir -p $(TMP_DIR))
-	./compiler 2023test/00_main.sy -o $(TMP_DIR)/00_main.S
-
-
+run: $(TARGET)
+	./compiler 2023test/00_main.sy -o 00_main.S
 
 clean:
-	rm -rf $(OBJ_DIR) $(TARGET) $(TMP_DIR) obj *.s *.S
+	rm -rf $(OBJ_DIR)/*.o $(TARGET) build obj *.s *.S
+
+count:
+	@echo "Counting lines in src and inc directories..."
+	@find src inc -type f | xargs wc -l
 

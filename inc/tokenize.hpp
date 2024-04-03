@@ -28,12 +28,14 @@ public:
         this->Kind = Kind;
         this->Name = Name;
     }
-    void clear();
 };
 class DigitalTok: public Token{
     int val;
 public:
     DigitalTok(TokenKind Kind,string Name,int value):Token(Kind,Name){
+#ifdef __Debug_TokenList__        
+        printf("In DigitalTok.\nTokenKind:%d TokenName:%s Val:%d\n",Kind,Name.c_str(),value);
+#endif
         this->val = value;
     }
     uint32_t getVal() override{
@@ -46,7 +48,7 @@ class OtherTok: public Token{
     public:
     ~OtherTok() {};
     OtherTok(TokenKind Kind,string Name):Token(Kind,Name){};
-    uint32_t getVal(){
+    uint32_t getVal() override{
         printf("don't have val\n");
         return 0;
     }
@@ -55,8 +57,6 @@ class OtherTok: public Token{
 
 //---------------------------------------------------------------------------------
 class TokenList {
-    
-
 public:
     Token* head = nullptr;
     Token* tail = nullptr;
@@ -97,8 +97,12 @@ public:
         Token* Cur = head;
         while (Cur != nullptr) {
             Cur->print();
+            if(Cur->Kind == TK_NUM){
+                printf( "Val:%d ",Cur->getVal());
+            }
             Cur = Cur->Next;
         }
+        printf("\n");
     }
 };
 
