@@ -13,8 +13,6 @@ protected:
     
     NodeKind Kind;
     Token *Tok;
-    
-
 public:
     ASTNode *LHS = NULL,*RHS = NULL;
     ~ASTNode(){};
@@ -36,8 +34,6 @@ public:
             error("This ASTNode don't have val.");
             
         }
-
-            
         return 0;
     }
 };
