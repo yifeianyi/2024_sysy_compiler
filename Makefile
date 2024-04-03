@@ -33,14 +33,18 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
 $(TARGET): $(OBJ_FILES)
 	$(CXX) $(CXXFLAGS) $^ -o $@
 
-.PHONY: clean test
+.PHONY: clean test count
 
 test: compiler 
 	./test.sh
 
 run: compiler
-	./compiler 2023test/00_main.sy
+	./compiler 2023test/00_main.sy -o test.S
 
 clean:
 	rm -rf $(OBJ_DIR)/*.o $(TARGET) build obj
+
+count:
+	@echo "Counting lines in src and inc directories..."
+	@find src inc -type f | xargs wc -l
 

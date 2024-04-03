@@ -10,6 +10,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <vector>
+#include <unistd.h>
 using std::string;
 // ----------- log -----------
 

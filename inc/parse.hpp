@@ -10,17 +10,20 @@ typedef enum{
 
 class ASTNode
 {
-private:
-    ASTNode *LHS,*RHS;
+protected:
+    ASTNode *LHS = NULL,*RHS = NULL;
     NodeKind Kind;
     Token *Tok;
 
 public:
-    virtual ~ASTNode();
-    virtual void CreateNode() = 0;
-    ASTNode *GetParams(ASTNode *Params);
-    ASTNode *GetBody(ASTNode *Body);
-    ASTNode *SetLHS(ASTNode *LHS);
+    ~ASTNode(){};
+    ASTNode(NodeKind Kind,Token *&Tok):Kind(Kind), Tok(Tok){}
+    void AddLHS(ASTNode *LHS){
+        this->LHS = LHS;
+    }
+    void AddRHS(ASTNode *RHS){
+        this->RHS = RHS;
+    }
 };
 class NumNode : public ASTNode
 {
@@ -29,78 +32,87 @@ private:
     {
         float f;
         int   i;
-    };
+    }val;
     
 public:
-    NumNode(/* args */);
-    ~NumNode();
-    void CreateNode();
+    NumNode(Token *Tok): ASTNode(ND_NUM, Tok){
+        this->val.i = Tok->getVal();
+    }
+    ~NumNode(){
+
+    };
+    
 };
-
-
-class ObjNode : public ASTNode
+class ObjNode
 {
-private:
-    // Type *Ty;
-    uint32_t Offset;
+public:
+    ObjNode *Next;
     bool IsFunc;
-public:
-    ObjNode(/* args */);
-    ~ObjNode();
-    void CreateNode();
-};
+    // ObjNode(/* args */){
 
-class VarNode : public ObjNode
-{
-private:
-    string VarName;
-    bool IsLocal;
-public:
-    VarNode(/* args */);
-    ~VarNode();
-    void CreateNode();
+    // }
+    // ~ObjNode();
+    virtual void AddBody(ASTNode *Body){
+        if(!this->IsFunc){
+            error("This is not function.");
+        }
+    }
+    virtual void AddParams(ASTNode *Body){
+        if(!this->IsFunc){
+            error("This is not function.");
+        }
+    }
 };
 
 class FuncNode : public ObjNode
 {
 private:
     string FuncName;
-    ASTNode *Body;
-    std::vector<ObjNode> Params;
-    uint32_t StackSize;
+    ASTNode *Body = NULL;
+    ObjNode *Locals = NULL;
+    ObjNode *Params = NULL;
+    uint32_t StackSize = 0;
 
 public:
-    FuncNode(/* args */);
     ~FuncNode();
-    void CreateNode();
+    FuncNode(Token *Tok){
+        this->FuncName = Tok->Name;
+    }
+    void AddBody(ASTNode *Body){
+        this->Body = Body;
+    }
+    void AddParams(ObjNode *Params){
+        this->Params = Params;
+    }
 };
+// class VarNode : public ObjNode
+// {
+// private:
+//     string VarName;
+//     uint32_t Offset;
+//     bool IsLocal;
+// public:
+//     VarNode(/* args */);
+//     ~VarNode();
+// };
+// class IFNode : public ASTNode
+// {
+// private:
+//     ASTNode *Cond;
+//     ASTNode *Then;
+//     ASTNode *Els;
+// };
+// class ForNode : public IFNode
+// {
+// private:
+//     ASTNode *Init;
+//     ASTNode *Inc;
+// public:
+//     ForNode(/* args */);
+//     ~ForNode();
+// };
 
-class OpNode : public ASTNode
-{
-private:
-    
-public:
-    OpNode(/* args */);
-    ~OpNode();
-    void CreateNode();
-};
 
-class IFNode : public ASTNode
-{
-private:
-    ASTNode *Cond;
-    ASTNode *Then;
-    ASTNode *Els;
-};
-
-class ForNode : public IFNode
-{
-private:
-    ASTNode *Init;
-    ASTNode *Inc;
-public:
-    ForNode(/* args */);
-    ~ForNode();
-};
+ObjNode *parse(TokenList *list);
 
 #endif
