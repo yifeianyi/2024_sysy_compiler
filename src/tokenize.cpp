@@ -22,7 +22,7 @@ static void TagKeywords(Token *head){
   }
 }
 static bool isKeywords(Token *Tok){
-  static string keywords[]={"return"};
+  static string keywords[]={"return","int","float"};
   int len =  keywords->size();
   for(int i = 0;i < len;i++){
     if(Tok->Name == keywords[i])return true;
@@ -77,9 +77,10 @@ TokenList *tokenize(char* P){
   }
 
   list->addNode(new OtherTok(TK_EOF,"ending"));
+#ifdef __Debug_Token_List__
+  list->print();
+#endif
   TagKeywords(list->head);     
-  
-  // list->print(); 
   return list;
 }
 
@@ -125,6 +126,5 @@ char *readFile(char *Path){
   return Buf;
 }
 TokenList *tokenizeFile(char *Path){
-    // printf("In tokenizeFile\n");
     return tokenize(readFile(Path));
 }

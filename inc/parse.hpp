@@ -2,7 +2,6 @@
 #define __PARSE_HPP__
 #include<common.hpp>
 #include<tokenize.hpp>
-#include<vector>
 typedef enum{
     ND_RETURN,
     ND_NUM
@@ -11,18 +10,35 @@ typedef enum{
 class ASTNode
 {
 protected:
-    ASTNode *LHS = NULL,*RHS = NULL;
+    
     NodeKind Kind;
     Token *Tok;
+    
 
 public:
+    ASTNode *LHS = NULL,*RHS = NULL;
     ~ASTNode(){};
-    ASTNode(NodeKind Kind,Token *&Tok):Kind(Kind), Tok(Tok){}
+    ASTNode(NodeKind Kind,Token *&Tok):Kind(Kind), Tok(Tok){
+        if(Kind != ND_NUM)Tok = Tok->Next;
+    }
     void AddLHS(ASTNode *LHS){
         this->LHS = LHS;
     }
     void AddRHS(ASTNode *RHS){
         this->RHS = RHS;
+    }
+    int getKind(){
+        return this->Kind;
+    }
+    virtual int getVal(){
+        if(this->Kind != ND_NUM){
+            Log("ASTNode:%s",this->Tok->Name.c_str());
+            error("This ASTNode don't have val.");
+            
+        }
+
+            
+        return 0;
     }
 };
 class NumNode : public ASTNode
@@ -35,39 +51,48 @@ private:
     }val;
     
 public:
-    NumNode(Token *Tok): ASTNode(ND_NUM, Tok){
+    NumNode(Token *&Tok): ASTNode(ND_NUM, Tok){
         this->val.i = Tok->getVal();
+        Tok = Tok->Next;
     }
     ~NumNode(){
-
     };
-    
+    int getVal()override{
+        return this->val.i;
+    }
 };
 class ObjNode
 {
 public:
-    ObjNode *Next;
+    string Name;
+    ObjNode *Next=NULL;
     bool IsFunc;
-    // ObjNode(/* args */){
-
-    // }
+    ObjNode(Token *&Tok){
+        this->Name = Tok->Name;
+        Tok = Tok->Next;
+    }
     // ~ObjNode();
     virtual void AddBody(ASTNode *Body){
         if(!this->IsFunc){
-            error("This is not function.");
+            error("Add function body error.");
         }
     }
-    virtual void AddParams(ASTNode *Body){
+    virtual void AddParams(ObjNode *Body){
         if(!this->IsFunc){
-            error("This is not function.");
+            error("Add function Params error.");
         }
+    }
+    virtual ASTNode *GetBody(){
+        if(!this->IsFunc){
+            error("This is not function.\nDon't have Body.");
+        }
+        return NULL;
     }
 };
 
 class FuncNode : public ObjNode
 {
 private:
-    string FuncName;
     ASTNode *Body = NULL;
     ObjNode *Locals = NULL;
     ObjNode *Params = NULL;
@@ -75,15 +100,19 @@ private:
 
 public:
     ~FuncNode();
-    FuncNode(Token *Tok){
-        this->FuncName = Tok->Name;
+    FuncNode(Token *&Tok):ObjNode(Tok){
+        this->IsFunc = true;
     }
     void AddBody(ASTNode *Body){
         this->Body = Body;
     }
-    void AddParams(ObjNode *Params){
+    void AddParams(ObjNode *Params) {
         this->Params = Params;
     }
+    ASTNode *GetBody(){
+        return this->Body;
+    }
+    
 };
 // class VarNode : public ObjNode
 // {

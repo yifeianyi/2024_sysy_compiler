@@ -67,6 +67,6 @@ void error(const char *Fmt, ...);
 /*----------------------------------------------------------*/
 
 
-// #include "debug.h"
+#include "debug.hpp"
 
 #endif

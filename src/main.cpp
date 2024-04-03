@@ -4,7 +4,7 @@
 using std::vector;
 using std::string;
 
-extern void codegen(TokenList* list ,FILE* Out);
+extern void codegen(ObjNode *Obj,FILE* Out);
 
 static bool OptS;
 static string OpTo;
@@ -66,19 +66,18 @@ static FILE *openFile(string &Path){
 int main(int Argc, char **Argv){
     if (Argc < 2) {
         printf("%s\n",*Argv);
-        // error("%s: invalid number of arguments", Argv[0]);
+        error("%s: invalid number of arguments", Argv[0]);
     }
 
     vector<string> args(Argv + 1,Argv + Argc);
     for(int i=1; i < Argc; i++) 
         args.push_back(string(Argv[i]));
-    printf("test:%s\n",args[0].c_str());
     parseArgs(Argc, args);
 
 
     TokenList *list = tokenizeFile(Argv[1]);
-    // ObjNode *Obj = parse(list);
+    ObjNode *Obj = parse(list);
     FILE *Out = openFile(OpTo);
-    codegen(list,Out);
+    codegen(Obj,Out);
     return 0;
 }
