@@ -5,7 +5,15 @@
 typedef enum{
     ND_RETURN,
     ND_NUM,
-    ND_EXPR_STMT
+
+    ND_ADD,
+    ND_SUB,
+    ND_MUL,
+    ND_DIV,
+    ND_MOD,
+
+    ND_EXPR_STMT, // 表达式语句
+    ND_STMT_EXPR, // 语句表达式
 }NodeKind;
 
 class ASTNode
@@ -21,12 +29,19 @@ public:
     ASTNode(NodeKind Kind,Token *&Tok):Kind(Kind), Tok(Tok){
         if(Kind != ND_NUM)Tok = Tok->Next;
     }
-    void AddLHS(ASTNode *LHS){
-        this->LHS = LHS;
+    void newBinary(NodeKind Kind, ASTNode *LHS, ASTNode *RHS){
+
     }
-    void AddRHS(ASTNode *RHS){
-        this->RHS = RHS;
+    void newUnary(NodeKind Kind, ASTNode *LHS){
+
     }
+    // void AddLHS(ASTNode *LHS){
+    //     this->LHS = LHS;
+    // }
+
+    // void AddRHS(ASTNode *RHS){
+    //     this->RHS = RHS;
+    // }
     int getKind(){
         return this->Kind;
     }

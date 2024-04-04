@@ -46,6 +46,10 @@ clean:
 	rm -rf $(OBJ_DIR)/*.o $(TARGET) build obj *.s *.S
 
 count:
-	@echo "Counting lines in src and inc directories..."
 	@find src inc -type f | xargs wc -l
+
+sycount:
+# @find 2023 -type f | xargs wc -l
+	find 2023test -type f -name "*.sy" | wc -l
+
 

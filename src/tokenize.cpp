@@ -32,6 +32,12 @@ static bool isKeywords(Token *Tok){
 static int readPunct(char *Ptr){
   return ispunct(*Ptr) ? 1 : 0 ;
 }
+// 判断Str是否以SubStr开头
+static bool startsWith(char *Str, char *SubStr) {
+  // 比较LHS和RHS的N个字符是否相等
+  return strncmp(Str, SubStr, strlen(SubStr)) == 0;
+}
+
 /*----------------------------------核心定义---------------------------------------------*/
 TokenList *tokenize(char* P){
   Assert(P!=NULL,"Input File is NULL!");
@@ -42,7 +48,23 @@ TokenList *tokenize(char* P){
       ++P;
       continue;
     }
+        // 跳过行注释
+    if (startsWith(P, "//")) {
+      P += 2;
+      while (*P != '\n')
+        P++;
+      continue;
+    }
 
+    // 跳过块注释
+    if (startsWith(P, "/*")) {
+      // 查找第一个"*/"的位置
+      char *Q = strstr(P + 2, "*/");
+      if (!Q)
+        error( "unclosed block comment");
+      P = Q + 2;
+      continue;
+    }
     //解析数字
     if(isdigit(*P)){
       const char *Start = P;
