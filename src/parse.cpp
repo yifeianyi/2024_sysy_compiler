@@ -66,10 +66,18 @@ static ASTNode *Block(Token *&Tok){
     return Nd;
 }
 static ASTNode *BlockItem(Token *&Tok){
+    ASTNode head;
+    ASTNode *Cur = &head;
     skip(Tok,"{");
-    ASTNode *Nd = Stmt(Tok);
+    while(Tok->Name != "}"){
+        Cur->Next = Stmt(Tok);
+        Cur = Cur->Next;
+    }
+#ifdef __DEBUG_BLOCKITEM__
+    Log("TokenName:%s",Tok->Name.c_str());
+#endif
     skip(Tok,"}");
-    return Nd;
+    return head.Next;
 }
 static ASTNode *Stmt(Token *&Tok){
     if (Tok->Name == "return")

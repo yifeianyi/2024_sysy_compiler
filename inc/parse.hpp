@@ -4,18 +4,20 @@
 #include<tokenize.hpp>
 typedef enum{
     ND_RETURN,
-    ND_NUM
+    ND_NUM,
+    ND_EXPR_STMT
 }NodeKind;
 
 class ASTNode
 {
 protected:
-    
     NodeKind Kind;
     Token *Tok;
 public:
     ASTNode *LHS = NULL,*RHS = NULL;
+    ASTNode *Next = NULL;
     ~ASTNode(){};
+    ASTNode(){}
     ASTNode(NodeKind Kind,Token *&Tok):Kind(Kind), Tok(Tok){
         if(Kind != ND_NUM)Tok = Tok->Next;
     }

@@ -35,6 +35,8 @@ void codegen(ObjNode *Obj,FILE* Out){
     printLn(" .globl %s", Obj->Name.c_str());
     printLn(" .text");
     printLn("%s:", Obj->Name.c_str());
-    genStmt(Nd);
+    for(auto it = Nd;it != NULL;it = it->Next){
+      genStmt(it);
+    }
     printLn(" ret");
 }

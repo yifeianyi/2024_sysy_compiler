@@ -14,6 +14,7 @@
 #include <string.h>
 #include <vector>
 #include <unistd.h>
+#include <list>
 using std::string;
 // ----------- log -----------
 
