@@ -35,13 +35,13 @@ public:
     void newUnary(NodeKind Kind, ASTNode *LHS){
 
     }
-    // void AddLHS(ASTNode *LHS){
-    //     this->LHS = LHS;
-    // }
+    void AddLHS(ASTNode *LHS){
+        this->LHS = LHS;
+    }
 
-    // void AddRHS(ASTNode *RHS){
-    //     this->RHS = RHS;
-    // }
+    void AddRHS(ASTNode *RHS){
+        this->RHS = RHS;
+    }
     int getKind(){
         return this->Kind;
     }

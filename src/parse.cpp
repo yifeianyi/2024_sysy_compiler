@@ -28,11 +28,11 @@ static ASTNode *Block(Token *&Tok);
 static ASTNode *BlockItem(Token *&Tok);
 static ASTNode *Stmt(Token *&Tok);
 //---------------------------------------
-static ASTNode *Expr(Token *&Tok);
-static ASTNode *AddExpr(Token *&Tok);
-static ASTNode *MulExpr(Token *&Tok);
-static ASTNode *UnaryExpr(Token *&Tok);
-static ASTNode *PrimaryExpr(Token *&Tok);
+// static ASTNode *Expr(Token *&Tok);
+// static ASTNode *AddExpr(Token *&Tok);
+// static ASTNode *MulExpr(Token *&Tok);
+// static ASTNode *UnaryExpr(Token *&Tok);
+// static ASTNode *PrimaryExpr(Token *&Tok);
 
 ObjNode *parse(TokenList *list){
     Token *Tok = list->head;
@@ -110,63 +110,63 @@ static ASTNode *Stmt(Token *&Tok){
 }
 
 
-static ASTNode *Expr(Token *&Tok){
-    ASTNode *Nd = AddExpr(Tok);
-    return Nd;
-}
-static ASTNode *AddExpr(Token *&Tok){
-    ASTNode *Nd = MulExpr(Tok);
+// static ASTNode *Expr(Token *&Tok){
+//     ASTNode *Nd = AddExpr(Tok);
+//     return Nd;
+// }
+// static ASTNode *AddExpr(Token *&Tok){
+//     ASTNode *Nd = MulExpr(Tok);
 
-    while(true){
-        if(Tok->Name == "+"){
-            Tok = Tok->Next;
-            Nd->newBinary(ND_ADD, Nd, MulExpr(Tok));
-            continue;
-        }
+//     while(true){
+//         if(Tok->Name == "+"){
+//             Tok = Tok->Next;
+//             Nd->newBinary(ND_ADD, Nd, MulExpr(Tok));
+//             continue;
+//         }
 
-        if(Tok->Name == "-"){
-            Tok = Tok->Next;
-            Nd->newBinary(ND_SUB, Nd, MulExpr(Tok));
-            continue;
-        }
-        return Nd;
-    }
-}
+//         if(Tok->Name == "-"){
+//             Tok = Tok->Next;
+//             Nd->newBinary(ND_SUB, Nd, MulExpr(Tok));
+//             continue;
+//         }
+//         return Nd;
+//     }
+// }
 
-static ASTNode *MulExpr(Token *&Tok){
-    ASTNode *Nd = UnaryExpr(Tok);
+// static ASTNode *MulExpr(Token *&Tok){
+//     ASTNode *Nd = UnaryExpr(Tok);
 
-    while(true){
-        if(Tok->Name == "*"){
-            Tok = Tok->Next;
-            Nd->newBinary(ND_MUL,Nd, UnaryExpr(Tok));
-            continue;
-        }
+//     while(true){
+//         if(Tok->Name == "*"){
+//             Tok = Tok->Next;
+//             Nd->newBinary(ND_MUL,Nd, UnaryExpr(Tok));
+//             continue;
+//         }
 
-        if(Tok->Name == "/"){
-            Tok = Tok->Next;
-            Nd->newBinary(ND_DIV,Nd, UnaryExpr(Tok));
-            continue;
-        }
+//         if(Tok->Name == "/"){
+//             Tok = Tok->Next;
+//             Nd->newBinary(ND_DIV,Nd, UnaryExpr(Tok));
+//             continue;
+//         }
 
-        if(Tok->Name == "%"){
-            Tok = Tok->Next;
-            Nd->newBinary(ND_MOD,Nd, UnaryExpr(Tok));
-            continue;
-        }
-        return Nd;
-    }
-}
+//         if(Tok->Name == "%"){
+//             Tok = Tok->Next;
+//             Nd->newBinary(ND_MOD,Nd, UnaryExpr(Tok));
+//             continue;
+//         }
+//         return Nd;
+//     }
+// }
 
-static ASTNode *UnaryExpr(Token *&Tok){
-    ASTNode *Nd = PrimaryExpr(Tok);
-    return Nd;
-}
+// static ASTNode *UnaryExpr(Token *&Tok){
+//     ASTNode *Nd = PrimaryExpr(Tok);
+//     return Nd;
+// }
 
-static ASTNode *PrimaryExpr(Token *&Tok){
-    if(Tok->Name == "("){
-        ASTNode *Nd = new ASTNode(ND_STMT_EXPR, Tok);
+// static ASTNode *PrimaryExpr(Token *&Tok){
+//     if(Tok->Name == "("){
+//         ASTNode *Nd = new ASTNode(ND_STMT_EXPR, Tok);
 
         
-    }
-}
+//     }
+// }

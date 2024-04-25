@@ -33,7 +33,7 @@ static int readPunct(char *Ptr){
   return ispunct(*Ptr) ? 1 : 0 ;
 }
 // 判断Str是否以SubStr开头
-static bool startsWith(char *Str, char *SubStr) {
+static bool startsWith(char *Str,const char *SubStr) {
   // 比较LHS和RHS的N个字符是否相等
   return strncmp(Str, SubStr, strlen(SubStr)) == 0;
 }
