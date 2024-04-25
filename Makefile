@@ -40,10 +40,10 @@ test: $(TARGET)
 	./test.sh
 
 run: $(TARGET)
-	./compiler 2023test/00_main.sy -o 00_main.S
+	./compiler -S 2023test/00_main.sy -o 00_main.S
 
 clean:
-	rm -rf $(OBJ_DIR)/*.o $(TARGET) build obj *.s *.S
+	rm -rf $(OBJ_DIR)/*.o $(TARGET) build obj *.s *.S *.out
 
 count:
 	@find src inc -type f | xargs wc -l

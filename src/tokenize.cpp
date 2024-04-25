@@ -108,12 +108,14 @@ TokenList *tokenize(char* P){
 
 char *readFile(const char *Path){
   assert(Path!=NULL);
+  // Log("Path:%s",Path);
   FILE *FP;
     //过渡方案
   if (strcmp(Path,"-")==0) {
     FP = stdin;
   } else {
     FP = fopen(Path, "r");
+    Assert(FP, "File open failed.");
     assert(FP);
     if (!FP)
       error("cannot open %s: %s", Path, strerror(errno));

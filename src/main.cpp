@@ -28,24 +28,28 @@ static void parseArgs(int Argc, vector<string> &args){
             continue;
         }
 
-        // 解析以 "-" 开头但不是上述参数的情况
-        if (args[i].front() == '-' && args[i].size() > 1) {
-            error("未知的参数: ", args[i]);
-        }
-
-        //暂时形同虚设
+        // //暂时形同虚设
         if( args[i] == "-S"){
             OptS = true;
             continue;
         }
 
+
+        // 解析以 "-" 开头但不是上述参数的情况
+        if (args[i].front() == '-' && args[i].size() > 1) {
+            error("未知的参数: ", args[i]);
+        }
+
+        
+
         InputPath = args[i];
     }
-    
         // 检查是否指定了输入文件路径
     if (InputPath.empty()) {
         error("没有指定输入文件");
     }
+
+    // Log("Path:%s",InputPath.c_str());
 }
 
 static FILE *openFile(string &Path){
@@ -74,8 +78,7 @@ int main(int Argc, char **Argv){
         args.push_back(string(Argv[i]));
     parseArgs(Argc, args);
 
-
-    TokenList *list = tokenizeFile(Argv[1]);
+    TokenList *list = tokenizeFile(InputPath.c_str());
     ObjNode *Obj = parse(list);
     FILE *Out = openFile(OpTo);
     codegen(Obj,Out);
