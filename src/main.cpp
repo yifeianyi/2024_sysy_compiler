@@ -37,7 +37,7 @@ static void parseArgs(int Argc, vector<string> &args){
 
         // 解析以 "-" 开头但不是上述参数的情况
         if (args[i].front() == '-' && args[i].size() > 1) {
-            error("未知的参数: ", args[i]);
+            error("未知的参数: ", args[i].c_str());
         }
 
         
@@ -60,7 +60,7 @@ static FILE *openFile(string &Path){
 
     FILE *Out = fopen(Path.c_str(), "w");
     if(!Out){
-        error("cannot open output file: %s: %s", Path, strerror(errno));
+        error("cannot open output file: %s: %s", Path.c_str(), strerror(errno));
     }
 
     return Out;

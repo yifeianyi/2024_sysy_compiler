@@ -4,7 +4,7 @@ OBJ_DIR := build
 TMP_DIR := tmp
 
 # 使用g++作为编译器来编译C和C++代码
-CXX := g++
+CXX := clang++
 CFLAGS := -Wall -I$(INC_DIR) -g
 CXXFLAGS := $(CFLAGS) # -std=c++11 # 为C++代码添加额外的编译选项
 
@@ -40,7 +40,7 @@ test: $(TARGET)
 	./test.sh
 
 run: $(TARGET)
-	./compiler -S 2023test/00_main.sy -o 00_main.S
+	./compiler -S  -o 00_main.S 2023test/00_main.sy
 
 clean:
 	rm -rf $(OBJ_DIR)/*.o $(TARGET) build obj *.s *.S *.out
