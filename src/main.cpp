@@ -1,6 +1,6 @@
 #include "common.hpp"
 #include "tokenize.hpp"
-#include "parse.hpp"
+#include "ast.hpp"
 using std::vector;
 using std::string;
 
@@ -53,9 +53,8 @@ static void parseArgs(int Argc, vector<string> &args){
 }
 
 static FILE *openFile(string &Path){
-    //过渡方案
-    if(Path.empty() || Path =="-"){
-        return stdout;
+    if(Path.empty()){
+        Assert(0,"Source path is error.");
     }
 
     FILE *Out = fopen(Path.c_str(), "w");
@@ -78,9 +77,10 @@ int main(int Argc, char **Argv){
         args.push_back(string(Argv[i]));
     parseArgs(Argc, args);
 
-    TokenList *list = tokenizeFile(InputPath.c_str());
-    ObjNode *Obj = parse(list);
-    FILE *Out = openFile(OpTo);
-    codegen(Obj,Out);
+    TokenList *list = tokenizeFile(InputPath.c_str());\
+    list->print();
+    // ObjNode *Obj = parse(list);
+    // FILE *Out = openFile(OpTo);
+    // codegen(Obj,Out);
     return 0;
 }

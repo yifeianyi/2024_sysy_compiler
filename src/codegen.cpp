@@ -1,6 +1,6 @@
 #include "common.hpp"
 #include "tokenize.hpp"
-#include "parse.hpp"
+#include "ast.hpp"
 
 static FILE *OutputFile;
 static void printLn(const char *Fmt,...){

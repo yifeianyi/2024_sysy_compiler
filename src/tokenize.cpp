@@ -22,7 +22,8 @@ static void TagKeywords(Token *head){
   }
 }
 static bool isKeywords(Token *Tok){
-  static string keywords[]={"return","int","float"};
+  static string keywords[]={"return","int","float","const",\
+                            "if","else","for","while","break","continue"};
   int len =  keywords->size();
   for(int i = 0;i < len;i++){
     if(Tok->Name == keywords[i])return true;
@@ -81,7 +82,7 @@ TokenList *tokenize(char* P){
           ++P;
       } while (isIdent2(*P));
       string name = list->fetchName(Start,P);
-      list->addNode(new OtherTok(TK_IDENT, name));
+      list->addNode(new Token(TK_IDENT, name));
       continue;
     }
     
@@ -89,7 +90,7 @@ TokenList *tokenize(char* P){
     int PunctLen = readPunct(P);
     if (PunctLen) {
       string name = list->fetchName(P,PunctLen);
-      list->addNode(new OtherTok(TK_PUNCT,name));
+      list->addNode(new Token(TK_PUNCT,name));
       P += PunctLen;
       continue;
     }
@@ -97,8 +98,7 @@ TokenList *tokenize(char* P){
       // 非法字符处理
       error("invalid token");
   }
-
-  list->addNode(new OtherTok(TK_EOF,"ending"));
+  list->addNode(new Token(TK_EOF,"ending"));
 #ifdef __Debug_Token_List__
   list->print();
 #endif
