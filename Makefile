@@ -5,7 +5,7 @@ TMP_DIR := tmp
 
 # 使用g++作为编译器来编译C和C++代码
 CXX := clang++
-CFLAGS := -Wall -I$(INC_DIR) -g
+CFLAGS := -I$(INC_DIR) -g #-Wall 
 CXXFLAGS := $(CFLAGS) # -std=c++11 # 为C++代码添加额外的编译选项
 
 # 找到C和C++的源文件
@@ -36,14 +36,16 @@ $(TARGET): $(OBJ_FILES)
 
 .PHONY: clean test count
 
-test: $(TARGET) 
-	./test.sh
+# test: $(TARGET) 
+# 	./test.sh
+tname ?= 00_main
+test := 2023test/$(tname)
 
 run: $(TARGET)
-	./compiler -S  -o 00_main.S 2023test/00_main.sy
+	./compiler -S  -o tmp/00_main.S $(test).sy
 
 clean:
-	rm -rf $(OBJ_DIR)/*.o $(TARGET) build obj *.s *.S *.out
+	rm -rf $(OBJ_DIR)/*.o $(TARGET) build obj *.s *.S *.out tmp/*
 
 count:
 	@find src inc -type f | xargs wc -l

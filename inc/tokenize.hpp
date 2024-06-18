@@ -19,7 +19,11 @@ public:
     string Name;
 public:
     virtual ~Token() {};
-    virtual uint32_t getVal() = 0;
+    // virtual uint32_t getVal() = 0;
+    virtual uint32_t getVal(){
+        printf("don't have val\n");
+        return 0;
+    }
     void print(){
         printf("->%s",Name.c_str());
     }
@@ -41,19 +45,7 @@ public:
     uint32_t getVal() override{
         return this->val;
     }
-    
 };
-
-class OtherTok: public Token{
-    public:
-    ~OtherTok() {};
-    OtherTok(TokenKind Kind,string Name):Token(Kind,Name){};
-    uint32_t getVal() override{
-        printf("don't have val\n");
-        return 0;
-    }
-};
-
 
 //---------------------------------------------------------------------------------
 class TokenList {
@@ -64,49 +56,17 @@ public:
     ~TokenList() {
         clear();
     }
-    void resetCur(){
-        this->cur = head->Next;
-    }
-    string fetchName(const char*start,const char *end){
-        int len = end - start;
-        return string(start,len);
-    }
-    string fetchName(const char*start,int len){
-        return string(start,len);
-    }
-
-    void clear() {
-        while (head != nullptr) {
-            Token* temp = head;
-            head = head->Next;
-            delete temp;
-        }
-    }
-
-    void addNode(Token* Node) {
-        if(this->head == nullptr){
-            head = Node;
-            tail = Node;
-        }else{
-            tail->Next = Node;
-            tail = tail->Next;     
-        }
-    }
-
-    void print() const {
-        Token* Cur = head;
-        while (Cur != nullptr) {
-            Cur->print();
-            if(Cur->Kind == TK_NUM){
-                printf( "Val:%d ",Cur->getVal());
-            }
-            Cur = Cur->Next;
-        }
-        printf("\n");
-    }
+    void resetCur();
+    string fetchName(const char*start,const char *end);
+    string fetchName(const char*start,int len);
+    void clear();
+    void addNode(Token* Node);
+    void print() const;
 };
-
 TokenList *tokenizeFile(const char *Path);
 char *readFile(const char *Path);
+
+//=============================================================================
+
 
 #endif

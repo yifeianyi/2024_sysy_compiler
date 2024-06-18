@@ -79,8 +79,8 @@ int main(int Argc, char **Argv){
 
     TokenList *list = tokenizeFile(InputPath.c_str());\
     list->print();
-    // ObjNode *Obj = parse(list);
-    // FILE *Out = openFile(OpTo);
-    // codegen(Obj,Out);
+    ObjNode *Obj = ASTBuild(list);
+    FILE *Out = openFile(OpTo);
+    codegen(Obj,Out);
     return 0;
 }

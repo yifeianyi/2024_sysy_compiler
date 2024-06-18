@@ -34,7 +34,7 @@ static ASTNode *Stmt(Token *&Tok);
 // static ASTNode *UnaryExpr(Token *&Tok);
 // static ASTNode *PrimaryExpr(Token *&Tok);
 
-ObjNode *parse(TokenList *list){
+ObjNode *ASTBuild(TokenList *list){
     Token *Tok = list->head;
     ObjNode *AstTree;
     AstTree = FuncDef(Tok);
@@ -82,8 +82,12 @@ static ASTNode *BlockItem(Token *&Tok){
     ASTNode *Cur = &head;
     skip(Tok,"{");
     while(Tok->Name != "}"){
-        Cur->Next = Stmt(Tok);
-        Cur = Cur->Next;
+        ASTNode *tmp = Stmt(Tok);
+        if(tmp==NULL)continue;
+        else{
+            Cur->Next = tmp;
+            Cur = Cur->Next;
+        }
     }
 #ifdef __DEBUG_BLOCKITEM__
     Log("TokenName:%s",Tok->Name.c_str());
@@ -93,6 +97,11 @@ static ASTNode *BlockItem(Token *&Tok){
 }
 static ASTNode *Stmt(Token *&Tok){
     
+    if(Tok->Name == ";"){
+        skip(Tok,";");
+        return NULL;
+    }
+
     if (Tok->Name == "return")
     {
         ASTNode *Nd = new ASTNode(ND_RETURN,Tok);

@@ -1,17 +1,15 @@
-#ifndef __PARSE_HPP__
-#define __PARSE_HPP__
+#ifndef __AST_HPP__
+#define __AST_HPP__
 #include<common.hpp>
 #include<tokenize.hpp>
 typedef enum{
     ND_RETURN,
     ND_NUM,
-
     ND_ADD,
     ND_SUB,
     ND_MUL,
     ND_DIV,
     ND_MOD,
-
     ND_EXPR_STMT, // 表达式语句
     ND_STMT_EXPR, // 语句表达式
 }NodeKind;
@@ -26,25 +24,13 @@ public:
     ASTNode *Next = NULL;
     ~ASTNode(){};
     ASTNode(){}
-    ASTNode(NodeKind Kind,Token *&Tok):Kind(Kind), Tok(Tok){
-        if(Kind != ND_NUM)Tok = Tok->Next;
-    }
-    void newBinary(NodeKind Kind, ASTNode *LHS, ASTNode *RHS){
+    ASTNode(NodeKind Kind,Token *&Tok);
+    void newBinary(NodeKind Kind, ASTNode *LHS, ASTNode *RHS);
+    void newUnary(NodeKind Kind, ASTNode *LHS);
+    void AddLHS(ASTNode *LHS);
 
-    }
-    void newUnary(NodeKind Kind, ASTNode *LHS){
-
-    }
-    void AddLHS(ASTNode *LHS){
-        this->LHS = LHS;
-    }
-
-    void AddRHS(ASTNode *RHS){
-        this->RHS = RHS;
-    }
-    int getKind(){
-        return this->Kind;
-    }
+    void AddRHS(ASTNode *RHS);
+    int getKind();
     virtual int getVal(){
         if(this->Kind != ND_NUM){
             Log("ASTNode:%s",this->Tok->Name.c_str());
@@ -74,6 +60,8 @@ public:
         return this->val.i;
     }
 };
+//====================================================
+//Root
 class ObjNode
 {
 public:
@@ -113,19 +101,10 @@ private:
 
 public:
     ~FuncNode();
-    FuncNode(Token *&Tok):ObjNode(Tok){
-        this->IsFunc = true;
-    }
-    void AddBody(ASTNode *Body){
-        this->Body = Body;
-    }
-    void AddParams(ObjNode *Params) {
-        this->Params = Params;
-    }
-    ASTNode *GetBody(){
-        return this->Body;
-    }
-    
+    FuncNode(Token *&Tok);
+    void AddBody(ASTNode *Body);
+    void AddParams(ObjNode *Params);
+    ASTNode *GetBody();
 };
 // class VarNode : public ObjNode
 // {
@@ -155,6 +134,6 @@ public:
 // };
 
 
-ObjNode *parse(TokenList *list);
+ObjNode *ASTBuild(TokenList *list);
 
 #endif
