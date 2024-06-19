@@ -1,0 +1,91 @@
+' 设置布局方向
+top to bottom direction
+@startuml
+
+' 定义类
+class ASTNode {
+    +Kind: NodeKind
+    -Tok: Token*
+    +print()
+}
+' --------------------------
+class ObjNode{
+    +type: Type
+    +Name: string
+    +Next: ASTNode*
+    +IsFunc: bool
+    +TravalAST()
+}
+class FuncNode{
+    +Body: BlockNode*
+    +Local: list<ObjNode>
+    +Params: list<VarNode>
+    +adddBody()
+    +getBody()
+    +addParams()
+}
+class VarNode{
+    
+    -IsLocal: bool
+    -IsConst: bool
+    +Offset: uint32_t
+    +val: int/float
+    +getVal()
+}
+
+class NumNode{
+    + type: Type
+    + val:int/float
+}
+
+' --------------------------
+class BlockNode{
+    +Body: 
+    +Next:
+}
+
+class unaryNode{
+    +LHS: ASTNode
+    +addLHS()
+    +IsBinNode()
+}
+class BinNode{
+    +RHS: ASTNode
+    +addLHS()
+}
+class Type{
+    +Kind: TypeKind
+    +int: Size
+    +Base: Type*
+
+}
+class IFNode{
+    + Cond
+    + Then
+    + Els
+}
+class ForNode{
+    + Cond
+    + Body
+}
+
+' 继承关系
+ASTNode <|-- ObjNode
+ASTNode <|-- BlockNode
+ASTNode <|-- unaryNode
+ASTNode <|-- NumNode
+ASTNode <|-- IFNode
+ASTNode <|-- ForNode
+
+ObjNode <|-- FuncNode
+ObjNode <|-- VarNode
+
+unaryNode <|-- BinNode
+'-----------------------------
+' 组合关系
+ObjNode *-- Type
+NumNode *-- Type
+ForNode  *--BlockNode
+FuncNode *-- BlockNode
+FuncNode *-- VarNode
+@enduml

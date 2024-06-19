@@ -21,7 +21,7 @@ static void skip(Token *&Tok,const string &s){
         error("error! Tok:%s s:%s ",Tok->Name.c_str(),s.c_str());
     }
 }
-static ObjNode *FuncDef(Token *&Tok);
+static ASTNode *FuncDef(Token *&Tok);
 static void declspec(Token *&Tok);
 static ObjNode *FuncParams(Token *&Tok);
 static ASTNode *Block(Token *&Tok);
@@ -34,20 +34,20 @@ static ASTNode *Stmt(Token *&Tok);
 // static ASTNode *UnaryExpr(Token *&Tok);
 // static ASTNode *PrimaryExpr(Token *&Tok);
 
-ObjNode *ASTBuild(TokenList *list){
+ASTNode *ASTBuild(TokenList *list){
     Token *Tok = list->head;
-    ObjNode *AstTree;
+    ASTNode *AstTree;
     AstTree = FuncDef(Tok);
     return AstTree;
 }
 
-static ObjNode *FuncDef(Token *&Tok){
+static ASTNode *FuncDef(Token *&Tok){
     declspec(Tok);
-    ObjNode *Func = new FuncNode(Tok);
+    FuncNode *Func = new FuncNode(Tok);
     skip(Tok,"(");
-    Func->AddParams(FuncParams(Tok));
+    Func->addParams(FuncParams(Tok));
     skip(Tok,")");
-    Func->AddBody(Block(Tok));
+    Func->addBody(Block(Tok));
     return Func;
 }
 
@@ -56,7 +56,6 @@ static void declspec(Token *&Tok) {
         Tok = Tok->Next;
         return ;
     }
-
     if( Tok->Name == "void" ){
         Tok = Tok->Next;
         return ;
@@ -74,13 +73,16 @@ static ObjNode *FuncParams(Token *&Tok){
     return NULL;
 }
 static ASTNode *Block(Token *&Tok){
+    skip(Tok,"{");
     ASTNode *Nd = BlockItem(Tok);
+    skip(Tok,"}");
     return Nd;
 }
 static ASTNode *BlockItem(Token *&Tok){
+    BlockNode *Nd = new BlockNode(ND_BLOCK,Tok);
+
     ASTNode head;
     ASTNode *Cur = &head;
-    skip(Tok,"{");
     while(Tok->Name != "}"){
         ASTNode *tmp = Stmt(Tok);
         if(tmp==NULL)continue;
@@ -89,11 +91,8 @@ static ASTNode *BlockItem(Token *&Tok){
             Cur = Cur->Next;
         }
     }
-#ifdef __DEBUG_BLOCKITEM__
-    Log("TokenName:%s",Tok->Name.c_str());
-#endif
-    skip(Tok,"}");
-    return head.Next;
+    Nd->addBody(head.Next);
+    return Nd;
 }
 static ASTNode *Stmt(Token *&Tok){
     
@@ -104,14 +103,14 @@ static ASTNode *Stmt(Token *&Tok){
 
     if (Tok->Name == "return")
     {
-        ASTNode *Nd = new ASTNode(ND_RETURN,Tok);
+        UnaryNode *Nd = new UnaryNode(ND_RETURN,Tok);
 #ifdef __DEBUG_PARSE_STMT__
         if(Tok->Kind == TK_NUM){
             printf("TokenKind is TK_NUM\n");
             printf("Val:%d\n",Tok->getVal());
         }
 #endif        
-        Nd->AddLHS(new NumNode(Tok));
+        Nd->addLHS(new NumNode(Tok));
         skip(Tok,";");
         return Nd;
     }
