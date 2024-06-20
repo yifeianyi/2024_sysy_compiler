@@ -59,7 +59,8 @@
   "files.associations": {
     "Kconfig": "makefile",
     "*.v": "verilog",
-    "new": "cpp"
+    "new": "cpp",
+    "string": "cpp"
   }
     
   

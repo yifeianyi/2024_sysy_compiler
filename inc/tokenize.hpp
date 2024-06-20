@@ -21,7 +21,7 @@ public:
     virtual ~Token() {};
     // virtual uint32_t getVal() = 0;
     virtual uint32_t getVal(){
-        printf("don't have val\n");
+        Assert(0,"Don't have val. TokName:%s.",this->Name.c_str());
         return 0;
     }
     void print(){
@@ -52,11 +52,10 @@ class TokenList {
 public:
     Token* head = nullptr;
     Token* tail = nullptr;
-    Token* cur  = nullptr;
+    // Token* cur  = nullptr;
     ~TokenList() {
         clear();
     }
-    void resetCur();
     string fetchName(const char*start,const char *end);
     string fetchName(const char*start,int len);
     void clear();

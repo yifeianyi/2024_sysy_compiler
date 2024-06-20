@@ -39,9 +39,7 @@ static void parseArgs(int Argc, vector<string> &args){
         if (args[i].front() == '-' && args[i].size() > 1) {
             error("未知的参数: ", args[i].c_str());
         }
-
         
-
         InputPath = args[i];
     }
         // 检查是否指定了输入文件路径
@@ -79,7 +77,7 @@ int main(int Argc, char **Argv){
 
     TokenList *list = tokenizeFile(InputPath.c_str());\
     list->print();
-    ObjNode *Obj = ASTBuild(list);
+    ObjNode *Obj = (ObjNode*)ASTBuild(list);
     FILE *Out = openFile(OpTo);
     codegen(Obj,Out);
     return 0;

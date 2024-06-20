@@ -1,8 +1,5 @@
 #include<tokenize.hpp>
 
-void TokenList::resetCur(){
-    this->cur = head->Next;
-}
 string TokenList::fetchName(const char*start,const char *end){
     int len = end - start;
     return string(start,len);

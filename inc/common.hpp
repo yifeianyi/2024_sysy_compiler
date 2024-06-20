@@ -71,5 +71,6 @@ void error(const char *Fmt, ...);
 
 
 #include "debug.hpp"
+#include "tokenize.hpp"
 
 #endif

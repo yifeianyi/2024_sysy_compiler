@@ -1,5 +1,6 @@
 #include<common.hpp>
 
+
 void error(const char *Fmt, ...){
   va_list VA;
   va_start(VA, Fmt);

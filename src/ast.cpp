@@ -14,16 +14,9 @@
     UnaryExpr   = PrimaryExpr
     PrimaryExpr = '('Expr ')' | Number
 */ 
-static void skip(Token *&Tok,const string &s){
-    if(Tok->Name == s){
-        Tok = Tok->Next;
-    }else{
-        error("error! Tok:%s s:%s ",Tok->Name.c_str(),s.c_str());
-    }
-}
+
 static ASTNode *FuncDef(Token *&Tok);
 static void declspec(Token *&Tok);
-static ObjNode *FuncParams(Token *&Tok);
 static ASTNode *Block(Token *&Tok);
 static ASTNode *BlockItem(Token *&Tok);
 static ASTNode *Stmt(Token *&Tok);
@@ -35,20 +28,23 @@ static ASTNode *Stmt(Token *&Tok);
 // static ASTNode *PrimaryExpr(Token *&Tok);
 
 ASTNode *ASTBuild(TokenList *list){
+    ASTNode astTree = {};
+    ASTNode *Cur = &astTree;
     Token *Tok = list->head;
-    ASTNode *AstTree;
-    AstTree = FuncDef(Tok);
-    return AstTree;
+    while(Tok->Kind!=TK_EOF){
+        // Log("TokName:%s.",Tok->Name.c_str());
+        Cur->Next = FuncDef(Tok);
+        Cur = Cur->Next;
+    }
+    return astTree.Next;
 }
 
 static ASTNode *FuncDef(Token *&Tok){
     declspec(Tok);
-    FuncNode *Func = new FuncNode(Tok);
-    skip(Tok,"(");
-    Func->addParams(FuncParams(Tok));
-    skip(Tok,")");
-    Func->addBody(Block(Tok));
-    return Func;
+    FuncNode *Nd = new FuncNode(Tok,ND_FUN);
+    Nd->addParams(Tok);
+    Nd->addBody(Block(Tok));
+    return Nd;
 }
 
 static void declspec(Token *&Tok) {
@@ -64,57 +60,46 @@ static void declspec(Token *&Tok) {
         Tok = Tok->Next;
         return ;
     }
-    printf("Type Name error\n");
-    assert(0);
+    Assert(0,"Type Name error.TokName:%s ,TokenKind:%d.",Tok->Name.c_str(),Tok->Kind);
     return;
 }
-static ObjNode *FuncParams(Token *&Tok){
-    //过渡方案，暂不支持函数传参
-    return NULL;
-}
 static ASTNode *Block(Token *&Tok){
-    skip(Tok,"{");
-    ASTNode *Nd = BlockItem(Tok);
+    BlockNode *Nd = new BlockNode(Tok, ND_BLOCK);
+    Nd->Body = BlockItem(Tok);
+    Log("NodeName:%s.",Nd->getTokName().c_str());
     skip(Tok,"}");
     return Nd;
 }
 static ASTNode *BlockItem(Token *&Tok){
-    BlockNode *Nd = new BlockNode(ND_BLOCK,Tok);
-
-    ASTNode head;
+    ASTNode head = {};
     ASTNode *Cur = &head;
-    while(Tok->Name != "}"){
+    while(Tok->Name!="}"){
         ASTNode *tmp = Stmt(Tok);
-        if(tmp==NULL)continue;
-        else{
+        
+        if(tmp){
+            Log("NodeName:%s.",tmp->getTokName().c_str());
             Cur->Next = tmp;
             Cur = Cur->Next;
         }
     }
-    Nd->addBody(head.Next);
-    return Nd;
+    Log("NodeName:%s.",head.Next->getTokName().c_str());
+    return head.Next;
 }
 static ASTNode *Stmt(Token *&Tok){
-    
-    if(Tok->Name == ";"){
-        skip(Tok,";");
-        return NULL;
-    }
-
-    if (Tok->Name == "return")
-    {
-        UnaryNode *Nd = new UnaryNode(ND_RETURN,Tok);
-#ifdef __DEBUG_PARSE_STMT__
-        if(Tok->Kind == TK_NUM){
-            printf("TokenKind is TK_NUM\n");
-            printf("Val:%d\n",Tok->getVal());
-        }
-#endif        
-        Nd->addLHS(new NumNode(Tok));
+    if(Tok->Name == "return"){
+        UnaryNode *Nd = new UnaryNode(Tok,ND_RETURN);
+        Nd->LHS = new NumNode(Tok,ND_NUM);
         skip(Tok,";");
         return Nd;
     }
-    return NULL;
+    if(Tok->Name == ";"){
+        skip(Tok,";");
+        return nullptr;
+    }
+
+
+    Assert(0,"unkonwn the Node in astBuild-Stmt.TokName:%s",Tok->Name.c_str());
+    return nullptr;
 }
 
 
