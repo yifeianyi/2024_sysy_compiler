@@ -5,6 +5,7 @@
 
 typedef enum{
     TK_NUM,
+    TK_BLOCK,
     TK_KEYWORD,
     TK_IDENT,
     TK_PUNCT,
@@ -18,6 +19,7 @@ public:
     TokenKind Kind;
     string Name;
 public:
+    
     virtual ~Token() {};
     // virtual uint32_t getVal() = 0;
     virtual uint32_t getVal(){
@@ -28,6 +30,7 @@ public:
         printf("->%s",Name.c_str());
     }
 
+    Token() {}
     Token(TokenKind Kind,string Name){
         this->Kind = Kind;
         this->Name = Name;

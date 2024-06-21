@@ -28,15 +28,17 @@ typedef enum{
 //-----------------------------------------------------
 class ASTNode
 {
-protected:
+public:
     NodeKind Kind;
     Token *Tok = nullptr;
 public:
     ASTNode *Next = nullptr;
     ~ASTNode(){};
     ASTNode(){}
+    ASTNode(NodeKind Kind, string op);
     ASTNode(Token *&Tok, NodeKind Kind);
     string getTokName();
+    
     // void astTokenPrint();
     //================= 函数相关 ===================================
     virtual void addParams(Token *&Tok){error("This ASTNode(TokName: %s) isn't a function node.",this->Tok->Name.c_str());}
@@ -47,8 +49,9 @@ public:
     }
 
     //================= op相关 ===================================
-    virtual ASTNode *getRHS(){error("This ASTNode(TokName: %s) don't have RHS.",this->Tok->Name.c_str());return nullptr;};
-    virtual ASTNode *getLHS(){error("This ASTNode(TokName: %s) don't have LHS.",this->Tok->Name.c_str());return nullptr;};
+    virtual ASTNode *getRHS(){return nullptr;};
+    virtual ASTNode *getLHS(){return nullptr;};
+    // virtual void newBinary(NodeKind kind, ASTNode *LHS, ASTNode *RHS){error("This ASTNode(TokName: %s) isn't OpNode.",LHS->Tok->Name.c_str());};
 
     //---------------------------------------------------
     int getKind();
@@ -116,16 +119,20 @@ public:
     ASTNode *LHS = nullptr;
 
 public:
+    UnaryNode(){}
+    UnaryNode(NodeKind kind,string op);
     UnaryNode(Token *&Tok, NodeKind kind);
     ~UnaryNode();
     ASTNode *getLHS();
 };
-class BinNode
+class BinNode : public UnaryNode
 {
 public:
     ASTNode *RHS = nullptr;
 public:
-    BinNode(/* args */);
+    BinNode(/* args */){}
+    BinNode(NodeKind kind,string op);
+    BinNode(NodeKind Kind,string op,ASTNode *LHS, ASTNode *RHS);
     ~BinNode();
     ASTNode *getRHS();
 };

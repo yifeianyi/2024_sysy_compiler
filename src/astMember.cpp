@@ -3,7 +3,12 @@
 /*
     ASTNode Member function
 */
+ASTNode::ASTNode(NodeKind Kind,string op):Kind(Kind){
+    Token *Tok = new Token(TK_PUNCT,op);
+    this->Tok = Tok;
+}
 ASTNode::ASTNode(Token *&Tok,NodeKind Kind):Kind(Kind), Tok(Tok){}
+
 int ASTNode::getKind(){
     return this->Kind;
 }
@@ -45,14 +50,23 @@ ASTNode *BlockNode::getBody(){
 BlockNode::BlockNode(Token *&Tok, NodeKind kind):ASTNode(Tok, kind){skip(Tok,"{");}
 
 //====================== UnaryNode | BinNode =========================
+UnaryNode::UnaryNode(NodeKind kind,string op):ASTNode(kind,op){}
 UnaryNode::UnaryNode(Token *&Tok, NodeKind kind):ASTNode(Tok, kind){Tok = Tok->Next;}
 ASTNode *UnaryNode::getLHS(){
     return this->LHS;
 }
-
+BinNode::BinNode(NodeKind Kind,string op):UnaryNode(Kind,op){}
+BinNode::BinNode(NodeKind Kind,string op,ASTNode *LHS, ASTNode *RHS):UnaryNode(Kind,op){
+    this->LHS = LHS;
+    this->RHS = RHS;
+}
+ASTNode *BinNode::getRHS(){
+    return this->RHS;
+}
 NumNode::NumNode(Token *&Tok, NodeKind kind):ASTNode(Tok, kind){
     this->val.i = Tok->getVal();
     Tok = Tok->Next;
+    // Log("Num value: %d.",this->val.i);
 }
 
 

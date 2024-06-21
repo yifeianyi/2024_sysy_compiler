@@ -3,6 +3,7 @@
 #include "ast.hpp"
 
 static FILE *OutputFile;
+static int Depth = 0;
 static void printLn(const char *Fmt,...){
   va_list VA;
   va_start(VA, Fmt);
@@ -10,14 +11,64 @@ static void printLn(const char *Fmt,...){
   va_end(VA);
   fprintf(OutputFile, "\n");
 }
+static void push(void) {
+  printLn("  # 压栈，将a0的值存入栈顶");
+  printLn("  addi sp, sp, -8");
+  printLn("  sd a0, 0(sp)");
+  Depth++;
+}
+static void pop(string Reg) {
+  printLn("  # 弹栈，将栈顶的值存入%s", Reg.c_str());
+  printLn("  ld %s, 0(sp)", Reg.c_str());
+  printLn("  addi sp, sp, 8");
+  Depth--;
+}
+
+static void genExpr(ASTNode *Nd){
+  Log("In genExpr._________NdName:%s.",Nd->getTokName().c_str());
+  if(Nd->Kind == ND_NUM){
+    printLn(" li a0,  %d",Nd->getVal());
+    return ;
+  }
+
+  // if(Nd->getRHS())
+  genExpr(Nd->getRHS());
+  push();  
+  // if(Nd->getLHS()) 
+  genExpr(Nd->getLHS());
+  pop("a1");
+
+  switch (Nd->Kind)
+  {
+  case ND_ADD: // + a0=a0+a1
+    printLn("  # a0+a1，结果写入a0");
+    printLn("  add a0, a0, a1");
+    return;
+  case ND_SUB: // - a0=a0-a1
+    printLn("  # a0-a1，结果写入a0");
+    printLn("  sub a0, a0, a1");
+    return;
+  case ND_MUL: // * a0=a0*a1
+    printLn("  # a0×a1，结果写入a0");
+    printLn("  mul a0, a0, a1");
+    return;
+  case ND_DIV: // / a0=a0/a1
+    printLn("  # a0÷a1，结果写入a0");
+    printLn("  div a0, a0, a1");
+    return;
+  default:
+    break;
+  }
+}
+
+
 static void genStmt( ASTNode *Nd){
   if(Nd->getKind()==ND_BLOCK)Nd = Nd->getBody();
   switch (Nd->getKind())
   {
   case ND_RETURN:
     Nd = Nd->getLHS();
-    Log("In ND_RETURN.");
-    printLn(" li a0,  %d",Nd->getVal());
+    genExpr(Nd);
     break;
   
   default:
