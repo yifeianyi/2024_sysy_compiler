@@ -7,13 +7,13 @@
     Block       = '{' { BlockItem } '}' 
 
     BlockItem   = Stmt
-    // Stmt        =  [Expr] ';'| 'return' [Expr]';' 
-    // Expr        = AddExpr
-    // AddExpr     = MulExpr   | MulExpr ('+' | '-') MulExpr
-    // MulExpr     = UnaryExpr | MulExpr ('*' | '/' | '%') UnaryExpr
-    // UnaryExpr   = PrimaryExpr | UnaryOp UnaryExpr
-    // UnaryOp     = '+' | '-' | '!'
-    // PrimaryExpr = '('Expr ')' | Number
+    Stmt        =  [Expr] ';'| 'return' [Expr]';' 
+    Expr        = AddExpr
+    AddExpr     = MulExpr   | MulExpr ('+' | '-') MulExpr
+    MulExpr     = UnaryExpr | MulExpr ('*' | '/' | '%') UnaryExpr
+    UnaryExpr   = PrimaryExpr | UnaryOp UnaryExpr
+    UnaryOp     = '+' | '-' | '!'
+    PrimaryExpr = '('Expr ')' | Number
     --------------------------------------------------------------------
 */ 
 
@@ -142,7 +142,7 @@ static ASTNode *MulExpr(Token *&Tok){
 
     while(true){
         if(Tok->Name == "*"){
-            Tok = Tok->Next;
+            skip(Tok,"*");
             // Nd->newBinary(ND_MUL,tmp, UnaryExpr(Tok));
             BinNode *Nd = new BinNode(ND_MUL, "*", tmp, UnaryExpr(Tok));
             tmp = Nd;
@@ -150,7 +150,7 @@ static ASTNode *MulExpr(Token *&Tok){
         }
 
         if(Tok->Name == "/"){
-            Tok = Tok->Next;
+            skip(Tok,"/");
             // Nd->newBinary(ND_DIV,tmp, UnaryExpr(Tok));
             BinNode *Nd = new BinNode(ND_DIV, "/", tmp, UnaryExpr(Tok));
             tmp = Nd;
@@ -158,7 +158,7 @@ static ASTNode *MulExpr(Token *&Tok){
         }
 
         if(Tok->Name == "%"){
-            Tok = Tok->Next;
+            skip(Tok,"%");
             // Nd->newBinary(ND_MOD,tmp, UnaryExpr(Tok));
             BinNode *Nd = new BinNode(ND_MOD, "%", tmp, UnaryExpr(Tok));
             tmp = Nd;
@@ -171,8 +171,17 @@ static ASTNode *MulExpr(Token *&Tok){
 }
 
 static ASTNode *UnaryExpr(Token *&Tok){
-    ASTNode *Nd = PrimaryExpr(Tok);
-    return Nd;
+    if(Tok->Name == "+"){
+        skip(Tok,"+");
+        return UnaryExpr(Tok);
+    }
+
+    if(Tok->Name == "-"){
+        Tok = Tok->Next;
+        return new UnaryNode(ND_NEG,"-",UnaryExpr(Tok));
+    }
+    
+    return PrimaryExpr(Tok); ;
 }
 
 static ASTNode *PrimaryExpr(Token *&Tok){

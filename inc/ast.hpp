@@ -22,6 +22,7 @@ typedef enum{
     ND_MUL,
     ND_DIV,
     ND_MOD,
+    ND_NEG,
     ND_EXPR_STMT, // 表达式语句
 }NodeKind;
 
@@ -122,6 +123,7 @@ public:
     UnaryNode(){}
     UnaryNode(NodeKind kind,string op);
     UnaryNode(Token *&Tok, NodeKind kind);
+    UnaryNode(NodeKind Kind,string op,ASTNode *LHS);
     ~UnaryNode();
     ASTNode *getLHS();
 };

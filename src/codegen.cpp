@@ -31,6 +31,21 @@ static void genExpr(ASTNode *Nd){
     return ;
   }
 
+  switch (Nd->Kind)
+  {
+  case ND_NUM:
+    printLn(" li a0,  %d",Nd->getVal());
+    return ;
+  case ND_NEG:
+    genExpr(Nd->getLHS());
+    // neg a0, a0是sub a0, x0, a0的别名, 即a0=0-a0
+    printLn("  # 对a0值进行取反\n");
+    printLn("  neg a0, a0\n");
+    return;
+  default:
+    break;
+  }
+
   // if(Nd->getRHS())
   genExpr(Nd->getRHS());
   push();  

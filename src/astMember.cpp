@@ -15,9 +15,6 @@ int ASTNode::getKind(){
 string ASTNode::getTokName(){
     return this->Tok->Name;
 }
-// void ASTNode::astTokenPrint(){
-//     Log("NodeName:%s.",getTokName().c_str());
-// }
 
 ObjNode::ObjNode(Token *&Tok,NodeKind Kind):ASTNode(Tok,Kind){
     this->Name = Tok->Name;
@@ -52,6 +49,9 @@ BlockNode::BlockNode(Token *&Tok, NodeKind kind):ASTNode(Tok, kind){skip(Tok,"{"
 //====================== UnaryNode | BinNode =========================
 UnaryNode::UnaryNode(NodeKind kind,string op):ASTNode(kind,op){}
 UnaryNode::UnaryNode(Token *&Tok, NodeKind kind):ASTNode(Tok, kind){Tok = Tok->Next;}
+UnaryNode::UnaryNode(NodeKind Kind,string op,ASTNode *LHS):ASTNode(Kind,op){
+    this->LHS = LHS;
+}
 ASTNode *UnaryNode::getLHS(){
     return this->LHS;
 }
