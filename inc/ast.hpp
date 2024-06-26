@@ -15,6 +15,7 @@ public:
 typedef enum{
     ND_RETURN,
     ND_VAR,
+    ND_ASSIGN,
 
     ND_FUN,
     ND_BLOCK,
@@ -86,6 +87,23 @@ public:
         if(!this->IsFunc){
             error("Add function Params error.");
         }
+    }
+    virtual ASTNode *getLVal(){
+        if(!this->IsFunc){
+            error("This node isn't a function.TokName:%s.",Tok->Name.c_str());
+        }
+        return nullptr;
+    }
+    virtual void setStackSize(int32_t size){
+        if(!this->IsFunc){
+            error("This node isn't a function.Not stack.TokName:%s.",Tok->Name.c_str());
+        }
+    }
+    virtual int32_t getStackSize(){
+        if(!this->IsFunc){
+            error("This node isn't a function.Not stack.TokName:%s.",Tok->Name.c_str());
+        }
+        return -1;
     }
 
 };
@@ -177,13 +195,22 @@ public:
     void addBody(ASTNode *Body);
     void addParams(Token *&Tok);
     ASTNode *getBody();
+    ASTNode *getLVal(){
+        return Locals;
+    }
+    void setStackSize(int32_t size){
+        this->StackSize = size;
+    }
+    int32_t getStackSize(){return this->StackSize;}
 };
 
 class VarNode : public ObjNode
 {
 private:
-    uint32_t Offset;
+    
     bool IsLocal;
+public:
+    int32_t Offset;
 public:
     ~VarNode();
     VarNode(/* args */);

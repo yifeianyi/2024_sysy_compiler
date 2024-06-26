@@ -12,12 +12,15 @@ VarNode *Locals;
     // BlockItem   = Stmt | Decl
 
     Stmt        =  [Expr] ';'| 'return' [Expr]';' 
-    Expr        = AddExpr
+
+    // Expr        =  Assign
+    // Assign      = AddExpr {'=' Assign }
+
     AddExpr     = MulExpr   | MulExpr ('+' | '-') MulExpr
     MulExpr     = UnaryExpr | MulExpr ('*' | '/' | '%') UnaryExpr
     UnaryExpr   = PrimaryExpr | UnaryOp UnaryExpr
     UnaryOp     = '+' | '-' | '!'
-    PrimaryExpr = '('Expr ')' | Number
+    PrimaryExpr = '('Expr ')' | Number | Ident
     --------------------------------------------------------------------
 */ 
 
@@ -26,6 +29,7 @@ static void declspec(Token *&Tok);
 static ASTNode *Block(Token *&Tok);
 static ASTNode *BlockItem(Token *&Tok);
 static ASTNode *Stmt(Token *&Tok);
+static ASTNode *Assign(Token *&Tok);
 static ASTNode *Expr(Token *&Tok);
 static ASTNode *AddExpr(Token *&Tok);
 static ASTNode *MulExpr(Token *&Tok);
@@ -128,7 +132,20 @@ static ASTNode *Stmt(Token *&Tok){
     }
 
     // Assert(0,"unkonwn the Node in astBuild-Stmt.TokName:%s",Tok->Name.c_str());
-    return AddExpr(Tok);
+    ASTNode *Nd = Assign(Tok);
+    skip(Tok,";");
+    return Nd;
+}
+
+static ASTNode *Assign(Token *&Tok){
+    ASTNode *Nd = AddExpr(Tok);
+
+    if(Tok->Name == "="){
+        // return Nd = newBinary(ND_ASSIGN, Nd, assign(Rest, Tok->Next), Tok);
+        Tok = Tok->Next;
+        return new BinNode(ND_ASSIGN,"=",Nd,AddExpr(Tok));
+    }
+    return Nd;
 }
 
 static ASTNode *AddExpr(Token *&Tok){
@@ -206,7 +223,17 @@ static ASTNode *UnaryExpr(Token *&Tok){
     
     return PrimaryExpr(Tok); ;
 }
+static VarNode *findLVal(Token *&Tok){
+    // string s(Tok->Name);
+    for(VarNode* i = Locals; i ;i =(VarNode*) i->Next){
+        if(Tok->Name==i->Name){
+            Tok = Tok->Next;
+            return i;
+        }
+    }
 
+    return nullptr;
+}
 static ASTNode *PrimaryExpr(Token *&Tok){
     // Log("In PrimaryExpr.");
     if(Tok->Name == "("){
@@ -222,6 +249,13 @@ static ASTNode *PrimaryExpr(Token *&Tok){
         NumNode *Nd = new NumNode(Tok,ND_NUM);
         Log("Node value:%d",Nd->getVal());
         Assert(Nd,"Parse primaryExpr TK_NUM error.");
+        return Nd;
+    }
+
+
+    if(Tok->Kind == TK_IDENT){
+        VarNode *Nd = findLVal(Tok);
+        Assert(Nd,"Var undefined.");
         return Nd;
     }
 
