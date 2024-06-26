@@ -1,12 +1,21 @@
 ///////// TEST
-int main(){
+/*int main(){
     ;;;;;;;
     /*
         FDSJLGKJL
         FJLADSJOIRE
         FLSDAJG
     */
-    int a,b;
-    a = 5;
-    return 3;
+   // int a,b;
+    //a = 5;
+  //  return 3;
+//}
+
+int main(){
+    int a, b0, _c;
+    a = 1;
+    b0 = 2;
+    _c = 3; 
+    //return 3;
+    return b0 + _c;
 }

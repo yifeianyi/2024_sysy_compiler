@@ -35,6 +35,9 @@ static void genAddr(VarNode *Nd){
 
   Assert(Nd->Tok, "not an lvalue");
 }
+static void load(){
+  printLn("  lw a0, 0(a0)");
+}
 static void store(){
   pop("a1");
   printLn("  sw a0, 0(a1)");
@@ -50,6 +53,10 @@ static void genExpr(ASTNode *Nd){
   {
   case ND_NUM:
     printLn(" li a0,  %d",Nd->getVal());
+    return ;
+  case ND_VAR:
+    genAddr((VarNode*)Nd);
+    load();
     return ;
   case ND_NEG:
     genExpr(Nd->getLHS());

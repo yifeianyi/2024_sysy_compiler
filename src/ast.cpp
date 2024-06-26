@@ -92,7 +92,10 @@ static void CreateLVal(Token *&Tok,bool first){
     Var->Next = Locals;
     Locals = Var;
 
-    if(Tok->Name == ",")CreateLVal(Tok,first);
+    if(Tok->Name == ","){
+        Log("In ','");
+        CreateLVal(Tok,false);
+    }
     else return ;
 }
 static ASTNode *BlockItem(Token *&Tok){
@@ -237,8 +240,8 @@ static VarNode *findLVal(Token *&Tok){
 static ASTNode *PrimaryExpr(Token *&Tok){
     // Log("In PrimaryExpr.");
     if(Tok->Name == "("){
-        skip(Tok,"(");
         Log("In primaryExpr (");
+        skip(Tok,"(");
         ASTNode *Nd = AddExpr(Tok);
         skip(Tok,")");
         return Nd;
