@@ -14,6 +14,8 @@ public:
 
 typedef enum{
     ND_RETURN,
+    ND_VAR,
+
     ND_FUN,
     ND_BLOCK,
     ND_NUM,
@@ -72,6 +74,7 @@ public:
     Type *type = nullptr;
     string Name;
     bool IsFunc = false;
+    ObjNode();
     ObjNode(Token *&Tok,NodeKind Kind);
     // ~ObjNode();
     virtual void addBody(ASTNode *Body){
@@ -162,9 +165,11 @@ class FuncNode : public ObjNode
 {
 private:
     ASTNode *Body = nullptr;
-    ObjNode *Locals = nullptr;
     ObjNode *Params = nullptr;
     uint32_t StackSize = 0;
+
+public:
+    ObjNode *Locals = nullptr;
 
 public:
     ~FuncNode();
@@ -180,8 +185,12 @@ private:
     uint32_t Offset;
     bool IsLocal;
 public:
-    VarNode(/* args */);
     ~VarNode();
+    VarNode(/* args */);
+    VarNode(Token *&Tok,NodeKind kind):ObjNode(Tok,kind){
+        Tok = Tok->Next;
+    }
+    
 };
 
 

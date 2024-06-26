@@ -6,5 +6,6 @@ int main(){
         FJLADSJOIRE
         FLSDAJG
     */
-    return (1+2)*3;
+    int a,b;
+    return 3;
 }

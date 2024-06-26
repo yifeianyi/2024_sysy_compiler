@@ -1,12 +1,16 @@
 #include<common.hpp>
 #include<ast.hpp>
+
+VarNode *Locals;
+
 /*
     CompUnit    = FuncDef
     FuncDef     = FuncType Ident '(' [FuncFParams] ')' Block
     FuncType    = 'void' | 'int' | 'float'
     Block       = '{' { BlockItem } '}' 
 
-    BlockItem   = Stmt
+    // BlockItem   = Stmt | Decl
+
     Stmt        =  [Expr] ';'| 'return' [Expr]';' 
     Expr        = AddExpr
     AddExpr     = MulExpr   | MulExpr ('+' | '-') MulExpr
@@ -47,6 +51,7 @@ static ASTNode *FuncDef(Token *&Tok){
     FuncNode *Nd = new FuncNode(Tok,ND_FUN);
     Nd->addParams(Tok);
     Nd->addBody(Block(Tok));
+    Nd->Locals = Locals;
     return Nd;
 }
 
@@ -75,12 +80,30 @@ static ASTNode *Block(Token *&Tok){
 
     return Nd;
 }
+static void CreateLVal(Token *&Tok,bool first){
+    if(!first)skip(Tok,",");
+    else first = false;
+
+    VarNode *Var = new VarNode(Tok,ND_VAR);
+    Var->Next = Locals;
+    Locals = Var;
+
+    if(Tok->Name == ",")CreateLVal(Tok,first);
+    else return ;
+}
 static ASTNode *BlockItem(Token *&Tok){
     BlockNode *block = new BlockNode(Tok, ND_BLOCK);
     
     ASTNode head = {};
     ASTNode *Cur = &head;
     while(Tok->Name!="}"){
+        if(Tok->Name == "int"){
+            declspec(Tok);
+            CreateLVal(Tok,true);
+            // if(Tok->Name==)
+            skip(Tok,";");
+        }
+
         ASTNode *tmp = nullptr;
         tmp = Stmt(Tok);
         if(tmp){
