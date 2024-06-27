@@ -173,15 +173,22 @@ void codegen(ObjNode *Obj,FILE* Out){
   printLn(" .text");
   printLn("%s:", Obj->Name.c_str());
   if(Obj->Name!="main"){
-    printLn("  addi sp, sp, -8");
-    printLn("  sd ra, 4(sp)");
-    printLn("  sd fp, 0(sp)");
+    
+    if(Obj->getStackSize()!=0){
+      printLn("  addi sp, sp, -8");
+      printLn("  sd ra, 4(sp)");
+      printLn("  sd fp, 0(sp)");
+    }
+    else{
+      printLn("  addi sp, sp, -4");
+      printLn("  sd ra, 4(sp)");
+    }
+    
   }
-
+  
   if(Obj->getStackSize()!=0){
     printLn("  mv fp, sp");
     // 将sp写入fp
-    printLn("  # 将sp的值写入fp,存储局部变量");
     printLn("  addi sp, sp, -%d", Obj->getStackSize());// 偏移量为实际变量所用的栈大小
     
   }
@@ -207,8 +214,9 @@ printLn("# =====%s段结束===============", Obj->Name.c_str());
     printLn("  addi sp, sp, 8");
   }
   else{
-    // if(Obj->getStackSize()!=0)
-    //   printLn("  mv sp, fp");
+    if(Obj->getStackSize()!=0)
+      printLn("  mv sp, fp");
+      printLn("  ld fp, 0(sp)");
   }
   printLn("  ret");
 }
