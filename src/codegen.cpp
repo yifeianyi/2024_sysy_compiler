@@ -137,6 +137,17 @@ static void genStmt( ASTNode *Nd){
   }
 }
 void codegen(ObjNode *Obj,FILE* Out){
+    // 栈布局
+    //-------------------------------// sp
+    //              ra
+    //-------------------------------// ra = sp-8
+    //              fp
+    //-------------------------------// fp = sp-16
+    //             变量
+    //-------------------------------// sp = sp-16-StackSize
+    //           表达式计算
+    //-------------------------------//
+
   Log("================================================");
   if(!Obj->IsFunc){
     printf("Obj->Name:%s.\n",Obj->Name.c_str());
@@ -191,8 +202,8 @@ printLn("# =====%s段结束===============", Obj->Name.c_str());
     printLn("# return段标签");
     printLn(".L.return.%s:", Obj->Name.c_str());
     printLn("  mv sp, fp");
-    printLn("  ld fp, 0(sp)");
-    printLn("  ld ra, 4(sp)");
+    printLn("  lw fp, 0(sp)");
+    printLn("  lw ra, 4(sp)");
     printLn("  addi sp, sp, 8");
     // 返回
     printLn("  # 返回a0值给系统调用");
