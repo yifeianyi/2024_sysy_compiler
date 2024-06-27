@@ -21,7 +21,7 @@ static void push(void) {
 }
 static void pop(string Reg) {
   printLn("  # 弹栈，将栈顶的值存入%s", Reg.c_str());
-  printLn("  ld %s, 0(sp)", Reg.c_str());
+  printLn("  lw %s, 0(sp)", Reg.c_str());
   printLn("  addi sp, sp, 4");
   Depth--;
 }
@@ -69,16 +69,11 @@ static void genExpr(ASTNode *Nd){
     printLn("  neg a0, a0\n");
     return;
   case ND_ASSIGN:
-    // 左部是左值，保存值到的地址
     Log("In assign. Nd_name:%s.",Nd->getTokName().c_str());
     genAddr((VarNode*)Nd->getLHS());
     push();
     genExpr(Nd->getRHS());
     store();
-
-    
-    
-    
     return;
 
   default:
@@ -173,9 +168,9 @@ void codegen(ObjNode *Obj,FILE* Out){
   }
 
   if(Obj->getStackSize()!=0){
+    printLn("  mv fp, sp");
     // 将sp写入fp
     printLn("  # 将sp的值写入fp,存储局部变量");
-    printLn("  mv fp, sp");
     printLn("  addi sp, sp, -%d", Obj->getStackSize());// 偏移量为实际变量所用的栈大小
     
   }
@@ -191,8 +186,8 @@ void codegen(ObjNode *Obj,FILE* Out){
   }
 
 //=============================================================
+printLn("# =====%s段结束===============", Obj->Name.c_str());
   if(Obj->Name!="main"){
-    printLn("# =====%s段结束===============", Obj->Name.c_str());
     printLn("# return段标签");
     printLn(".L.return.%s:", Obj->Name.c_str());
     printLn("  mv sp, fp");
