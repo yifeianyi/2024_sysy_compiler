@@ -207,7 +207,8 @@ printLn("# =====%s段结束===============", Obj->Name.c_str());
     printLn("  addi sp, sp, 8");
   }
   else{
-    printLn("  mv sp, fp");
+    if(Obj->getStackSize()!=0)
+      printLn("  mv sp, fp");
   }
   printLn("  ret");
 }
