@@ -42,7 +42,7 @@ tname ?= 00_main
 test := 2023test/$(tname)
 
 run: $(TARGET)
-	./compiler -S  -o tmp/00_main.S $(test).sy
+	./compiler -S  -o tmp/$(tname).S $(test).sy
 
 clean:
 	rm -rf $(OBJ_DIR)/*.o $(TARGET) build obj *.s *.S *.out tmp/*
