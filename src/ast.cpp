@@ -79,9 +79,11 @@ static void declspec(Token *&Tok) {
 // 创建多个 Block
 static ASTNode *Block(Token *&Tok){
     ASTNode *Nd;
+    Log("In astBlock.");
     Nd = BlockItem(Tok);
+    Log("In astBlock, Nd_name:%s.",Nd->getTokName().c_str());
     skip(Tok,"}");
-
+    
     return Nd;
 }
 static void CreateLVal(Token *&Tok,bool first){
@@ -106,23 +108,26 @@ static ASTNode *BlockItem(Token *&Tok){
     while(Tok->Name!="}"){
         if(Tok->Name == "int"){
             declspec(Tok);
+            Log("In BlockItem.");
             CreateLVal(Tok,true);
-            // if(Tok->Name==)
             skip(Tok,";");
+            // continue;
         }
 
+    
         ASTNode *tmp = nullptr;
         tmp = Stmt(Tok);
         if(tmp){
             Cur->Next = tmp;
             Cur = Cur->Next;
         }
+        skip(Tok,";");
     }
-    return head.Next;
+    block->addBody(head.Next);
+    return block;
 }
 static ASTNode *Stmt(Token *&Tok){
     if(Tok->Name == ";"){
-        skip(Tok,";");
         return nullptr;
     }
     if(Tok->Name == "return"){
@@ -130,13 +135,11 @@ static ASTNode *Stmt(Token *&Tok){
         // Nd->LHS = new NumNode(Tok,ND_NUM);
         Nd->LHS =  AddExpr(Tok);
         Assert(Nd->LHS,"'return' left_son is NULL.");
-        skip(Tok,";");
         return Nd;
     }
 
     // Assert(0,"unkonwn the Node in astBuild-Stmt.TokName:%s",Tok->Name.c_str());
     ASTNode *Nd = Assign(Tok);
-    skip(Tok,";");
     return Nd;
 }
 
@@ -144,7 +147,6 @@ static ASTNode *Assign(Token *&Tok){
     ASTNode *Nd = AddExpr(Tok);
 
     if(Tok->Name == "="){
-        // return Nd = newBinary(ND_ASSIGN, Nd, assign(Rest, Tok->Next), Tok);
         Tok = Tok->Next;
         return new BinNode(ND_ASSIGN,"=",Nd,AddExpr(Tok));
     }
@@ -174,7 +176,7 @@ static ASTNode *AddExpr(Token *&Tok){
         }
         BinNode *Nd = (BinNode*)tmp;
         Assert(Nd!=NULL,"AddExpr return error");
-        Log("Create AddExpr  successed.__NdName:%s.",Nd->getTokName().c_str());
+        // Log("Create AddExpr  successed.__NdName:%s.",Nd->getTokName().c_str());
         return Nd;
     }
 }

@@ -78,6 +78,7 @@ int main(int Argc, char **Argv){
     TokenList *list = tokenizeFile(InputPath.c_str());\
     list->print();
     ObjNode *Obj = (ObjNode*)ASTBuild(list);
+    Log("Build AST finished.");
     FILE *Out = openFile(OpTo);
     codegen(Obj,Out);
     return 0;

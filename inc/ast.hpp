@@ -132,6 +132,7 @@ public:
     BlockNode(Token *&Tok,NodeKind Kind);
     ~BlockNode();
     ASTNode *getBody();
+    void addBody(ASTNode *body){this->Body = body;}
     
 };
 class UnaryNode : public ASTNode

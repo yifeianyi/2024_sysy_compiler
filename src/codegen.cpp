@@ -4,6 +4,8 @@
 
 static FILE *OutputFile;
 static int Depth = 0;
+const 
+
 static void printLn(const char *Fmt,...){
   va_list VA;
   va_start(VA, Fmt);
@@ -13,14 +15,14 @@ static void printLn(const char *Fmt,...){
 }
 static void push(void) {
   printLn("  # 压栈，将a0的值存入栈顶");
-  printLn("  addi sp, sp, -8");
-  printLn("  sd a0, 0(sp)");
+  printLn("  addi sp, sp, -4");
+  printLn("  sw a0, 0(sp)");
   Depth++;
 }
 static void pop(string Reg) {
   printLn("  # 弹栈，将栈顶的值存入%s", Reg.c_str());
   printLn("  ld %s, 0(sp)", Reg.c_str());
-  printLn("  addi sp, sp, 8");
+  printLn("  addi sp, sp, 4");
   Depth--;
 }
 static void genAddr(VarNode *Nd){
@@ -43,16 +45,16 @@ static void store(){
   printLn("  sw a0, 0(a1)");
 }
 static void genExpr(ASTNode *Nd){
-  Log("In genExpr._________NdName:%s.",Nd->getTokName().c_str());
+  Log("In genExpr.___NdName:%s.",Nd->getTokName().c_str());
   if(Nd->Kind == ND_NUM){
-    printLn(" li a0,  %d",Nd->getVal());
+    printLn("  li a0,  %d",Nd->getVal());
     return ;
   }
 
   switch (Nd->Kind)
   {
   case ND_NUM:
-    printLn(" li a0,  %d",Nd->getVal());
+    printLn("  li a0,  %d",Nd->getVal());
     return ;
   case ND_VAR:
     genAddr((VarNode*)Nd);
@@ -96,11 +98,9 @@ static void genExpr(ASTNode *Nd){
     printLn("  sub a0, a0, a1");
     return;
   case ND_MUL: // * a0=a0*a1
-    printLn("  # a0×a1，结果写入a0");
     printLn("  mul a0, a0, a1");
     return;
   case ND_DIV: // / a0=a0/a1
-    printLn("  # a0÷a1，结果写入a0");
     printLn("  div a0, a0, a1");
     return;
   default:
@@ -110,20 +110,34 @@ static void genExpr(ASTNode *Nd){
 
 
 static void genStmt( ASTNode *Nd){
-  if(Nd->getKind()==ND_BLOCK)Nd = Nd->getBody();
+  // if(Nd->getKind()==ND_BLOCK)Nd = Nd->getBody();
+  
   switch (Nd->getKind())
   {
+  case ND_BLOCK:
+    for(auto it = Nd->getBody();it != NULL;it = it->Next){
+      // Log("%d..NodeName:%s.",++i,it->getTokName().c_str());
+      genStmt(it);
+      
+    }
+    // genStmt(Nd->getBody());
+    return ;
   case ND_RETURN:
     Nd = Nd->getLHS();
     genExpr(Nd);
-    break;
-  
+    return ;
+  case ND_ASSIGN:
+    // static int count = 1;
+    // Log("In assign count:%d. Nd_Name:%s.",count++,Nd->getTokName().c_str());
+    genExpr(Nd);
+    return ;
   default:
     Log("Nothing kind match.TokName:%s, Node_Kind:%d.",Nd->getTokName().c_str(), Nd->getKind());
     break;
   }
 }
 void codegen(ObjNode *Obj,FILE* Out){
+  Log("================================================");
   if(!Obj->IsFunc){
     printf("Obj->Name:%s.\n",Obj->Name.c_str());
     Assert(0,"Semantic error.");
@@ -147,59 +161,40 @@ void codegen(ObjNode *Obj,FILE* Out){
   printLn(" .globl %s", Obj->Name.c_str());
   printLn(" .text");
   printLn("%s:", Obj->Name.c_str());
-  // Prologue, 前言
-  // if(Obj->Name != "main"){
-  //   // 将ra寄存器压栈,保存ra的值
-  //   printLn("  # 将ra寄存器压栈,保存ra的值");
-  //   printLn("  addi sp, sp, -16");
-  //   printLn("  sd ra, 8(sp)");
-  // }
-  // else{
-  //   printLn("  addi sp, sp, -8");
-  // }
+  if(Obj->Name!="main"){
+    printLn("  addi sp, sp, -8");
+    printLn("  sw ra, 4(sp)");
+    printLn("  sw fp, 0(sp)");
+  }
 
-  // 将ra寄存器压栈,保存ra的值
-  printLn("  # 将ra寄存器压栈,保存ra的值");
-  printLn("  addi sp, sp, -16");
-  printLn("  sd ra, 8(sp)");
-  
-  // 将fp压入栈中，保存fp的值
-  printLn("  # 将fp压栈，fp属于“被调用者保存”的寄存器，需要恢复原值");
-  printLn("  sd fp, 0(sp)");
-  // 将sp写入fp
-  printLn("  # 将sp的值写入fp");
-  printLn("  mv fp, sp");
-
-  // 偏移量为实际变量所用的栈大小
-  printLn("  # sp腾出StackSize大小的栈空间");
-  printLn("  addi sp, sp, -%d", Obj->getStackSize());
-
+  if(Obj->getStackSize()!=0){
+    // 将sp写入fp
+    printLn("  # 将sp的值写入fp,存储局部变量");
+    printLn("  addi sp, sp, -%d", Obj->getStackSize());// 偏移量为实际变量所用的栈大小
+    printLn("  mv fp, sp");
+  }
 
 //===================================================
-    ASTNode *Nd = Obj->getBody();
+  ASTNode *Nd = Obj->getBody();
+  int i = 0;
+  for(auto it = Nd;it != NULL;it = it->Next){
+    Log("%d..NodeName:%s.",++i,it->getTokName().c_str());
+    printLn("  #%d ====================================",i);
+    genStmt(it);
     
-    
-    int i = 1;
-    for(auto it = Nd;it != NULL;it = it->Next){
-      Log("%d..NodeName:%s.",i++,it->getTokName().c_str());
-      genStmt(it);
-    }
+  }
 
 //=============================================================
-printLn("# =====%s段结束===============", Obj->Name.c_str());
+  if(Obj->Name!="main"){
+    printLn("# =====%s段结束===============", Obj->Name.c_str());
     printLn("# return段标签");
     printLn(".L.return.%s:", Obj->Name.c_str());
-    // 将fp的值改写回sp
-    printLn("  # 将fp的值写回sp");
     printLn("  mv sp, fp");
-    // 将最早fp保存的值弹栈，恢复fp。
-    printLn("  # 将最早fp保存的值弹栈，恢复fp和sp");
     printLn("  ld fp, 0(sp)");
-    // 将ra寄存器弹栈,恢复ra的值
-    printLn("  # 将ra寄存器弹栈,恢复ra的值");
-    printLn("  ld ra, 8(sp)");
-    printLn("  addi sp, sp, 16");
+    printLn("  ld ra, 4(sp)");
+    printLn("  addi sp, sp, 8");
     // 返回
     printLn("  # 返回a0值给系统调用");
-    printLn("  ret");
+  }
+  printLn("  ret");
 }
