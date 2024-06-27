@@ -205,8 +205,9 @@ printLn("# =====%s段结束===============", Obj->Name.c_str());
     printLn("  ld fp, 0(sp)");
     printLn("  ld ra, 4(sp)");
     printLn("  addi sp, sp, 8");
-    // 返回
-    printLn("  # 返回a0值给系统调用");
+  }
+  else{
+    printLn("  mv sp, fp");
   }
   printLn("  ret");
 }
