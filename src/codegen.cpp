@@ -29,6 +29,7 @@ static void genAddr(VarNode *Nd){
   switch (Nd->Kind) {
   // 变量
   case ND_VAR:
+    printLn("#==== 生成 %s 的地址 ====",Nd->getTokName().c_str());
     printLn("  addi a0, fp, %d", Nd->Offset);
     return;
   default:
@@ -45,7 +46,7 @@ static void store(){
   printLn("  sw a0, 0(a1)");
 }
 static void genExpr(ASTNode *Nd){
-  Log("In genExpr.___NdName:%s.",Nd->getTokName().c_str());
+  // Log("In genExpr.___NdName:%s.",Nd->getTokName().c_str());
   if(Nd->Kind == ND_NUM){
     printLn("  li a0,  %d",Nd->getVal());
     return ;
@@ -57,6 +58,7 @@ static void genExpr(ASTNode *Nd){
     printLn("  li a0,  %d",Nd->getVal());
     return ;
   case ND_VAR:
+     Log("In ND_VAR.Nd_Name:%s.",Nd->getTokName().c_str());
     genAddr((VarNode*)Nd);
     load();
     return ;
@@ -71,9 +73,12 @@ static void genExpr(ASTNode *Nd){
     Log("In assign. Nd_name:%s.",Nd->getTokName().c_str());
     genAddr((VarNode*)Nd->getLHS());
     push();
-    // 右部是右值，为表达式的值
     genExpr(Nd->getRHS());
     store();
+
+    
+    
+    
     return;
 
   default:
@@ -170,8 +175,9 @@ void codegen(ObjNode *Obj,FILE* Out){
   if(Obj->getStackSize()!=0){
     // 将sp写入fp
     printLn("  # 将sp的值写入fp,存储局部变量");
-    printLn("  addi sp, sp, -%d", Obj->getStackSize());// 偏移量为实际变量所用的栈大小
     printLn("  mv fp, sp");
+    printLn("  addi sp, sp, -%d", Obj->getStackSize());// 偏移量为实际变量所用的栈大小
+    
   }
 
 //===================================================
