@@ -181,14 +181,15 @@ void codegen(ObjNode *Obj,FILE* Out){
     }
     else{
       printLn("  addi sp, sp, -4");
-      printLn("  sd ra, 4(sp)");
+      printLn("  sd fp, 4(sp)");
     }
     
   }
   
-  if(Obj->getStackSize()!=0){
+  else if(Obj->getStackSize()!=0){
+    printLn("  addi sp, sp, -4");
+    printLn("  sd fp, 4(sp)");
     printLn("  mv fp, sp");
-    // 将sp写入fp
     printLn("  addi sp, sp, -%d", Obj->getStackSize());// 偏移量为实际变量所用的栈大小
     
   }
