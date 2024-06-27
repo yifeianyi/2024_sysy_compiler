@@ -16,12 +16,12 @@ static void printLn(const char *Fmt,...){
 static void push(void) {
   printLn("  # 压栈，将a0的值存入栈顶");
   printLn("  addi sp, sp, -4");
-  printLn("  sw a0, 0(sp)");
+  printLn("  sd a0, 0(sp)");
   Depth++;
 }
 static void pop(string Reg) {
   printLn("  # 弹栈，将栈顶的值存入%s", Reg.c_str());
-  printLn("  lw %s, 0(sp)", Reg.c_str());
+  printLn("  ld %s, 0(sp)", Reg.c_str());
   printLn("  addi sp, sp, 4");
   Depth--;
 }
@@ -39,11 +39,11 @@ static void genAddr(VarNode *Nd){
   Assert(Nd->Tok, "not an lvalue");
 }
 static void load(){
-  printLn("  lw a0, 0(a0)");
+  printLn("  ld a0, 0(a0)");
 }
 static void store(){
   pop("a1");
-  printLn("  sw a0, 0(a1)");
+  printLn("  sd a0, 0(a1)");
 }
 static void genExpr(ASTNode *Nd){
   // Log("In genExpr.___NdName:%s.",Nd->getTokName().c_str());
@@ -174,8 +174,8 @@ void codegen(ObjNode *Obj,FILE* Out){
   printLn("%s:", Obj->Name.c_str());
   if(Obj->Name!="main"){
     printLn("  addi sp, sp, -8");
-    printLn("  sw ra, 4(sp)");
-    printLn("  sw fp, 0(sp)");
+    printLn("  sd ra, 4(sp)");
+    printLn("  sd fp, 0(sp)");
   }
 
   if(Obj->getStackSize()!=0){
@@ -202,8 +202,8 @@ printLn("# =====%s段结束===============", Obj->Name.c_str());
     printLn("# return段标签");
     printLn(".L.return.%s:", Obj->Name.c_str());
     printLn("  mv sp, fp");
-    printLn("  lw fp, 0(sp)");
-    printLn("  lw ra, 4(sp)");
+    printLn("  ld fp, 0(sp)");
+    printLn("  ld ra, 4(sp)");
     printLn("  addi sp, sp, 8");
     // 返回
     printLn("  # 返回a0值给系统调用");
